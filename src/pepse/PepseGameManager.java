@@ -1,18 +1,14 @@
 package pepse;
 
 import danogl.GameManager;
-import danogl.GameObject;
-import danogl.collisions.GameObjectCollection;
-import danogl.collisions.Layer;
 import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
-import danogl.gui.rendering.ImageRenderable;
 import danogl.util.Vector2;
-import pepse.world.Block;
 import pepse.world.Sky;
-import pepse.world.Terrain;
+import pepse.world.Terrain1;
+
 
 public class PepseGameManager extends GameManager {
 
@@ -33,7 +29,7 @@ public class PepseGameManager extends GameManager {
         //create sky
         createSky(windowDimensions);
         // create blocks
-        Terrain terrain = new Terrain(gameObjects(), 100, windowDimensions, 10);
+        Terrain1 terrain = new Terrain1(gameObjects(), 100, windowDimensions, 10);
     } // overrides initializeGame
 
 
