@@ -1,24 +1,23 @@
 package pepse;
 
 import danogl.GameManager;
+import danogl.collisions.GameObjectCollection;
+import danogl.collisions.Layer;
 import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
 import danogl.util.Vector2;
+import pepse.world.Block;
 import pepse.world.Sky;
 import pepse.world.Terrain;
 
 
 public class PepseGameManager extends GameManager {
 
-    private static final int SKYLAYER = 50; // need to decide the value later
-    private static final int BLOCKS_AMOUNT_OF_COL = 8;
-    private static final int BLOCKS_AMOUNT_OF_ROWS = 5;
-    private static final int INIT_X_COORDINATE = 50;
-    private static final int INIT_Y_COORDINATE = 45;
     private WindowController windowController;
     private Vector2 windowDimensions;
+    private static final int BlocksInSeason = 100;
 
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader, UserInputListener inputListener, WindowController windowController) {
@@ -29,15 +28,20 @@ public class PepseGameManager extends GameManager {
         //create sky
         createSky(windowDimensions);
         // create blocks
-        Terrain terrain = new Terrain(gameObjects(), 100, windowDimensions, 10);
+        createTerrain(gameObjects(), windowDimensions);
     } // overrides initializeGame
 
 
     // creates the sky
     private void createSky(Vector2 windowDimensions){
-    Sky sky = new Sky();
-    sky.create(gameObjects(), windowDimensions, SKYLAYER);
+        Sky.create( gameObjects(), windowDimensions , Layer.BACKGROUND);
     } // end of private method createSky
+
+    // creat terrain
+    private void createTerrain(GameObjectCollection gameObjects, Vector2 windowDimensions){
+        Terrain terr = new Terrain(gameObjects, Layer.STATIC_OBJECTS, windowDimensions);
+        terr.createInRange(0, (int)(BlocksInSeason * Block.SIZE));
+    } // end of private method create terrain
 
     // create block
     private void createBlock(Vector2 windowDimensions){
@@ -51,10 +55,6 @@ public class PepseGameManager extends GameManager {
      */
     public static void main(String[] args){
     new PepseGameManager().run();
-    // yo
-        for (int i = 0; i < ; i++) {
-            continue;
-        }
     } // end of main
 
 } // end of PepseGameManager

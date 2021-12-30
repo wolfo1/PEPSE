@@ -4,6 +4,7 @@ import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
 import danogl.collisions.Layer;
 import danogl.gui.rendering.RectangleRenderable;
+import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import pepse.util.ColorSupplier;
 
@@ -14,22 +15,19 @@ public class Terrain {
     private int groundLayer;
     private static float groundHeightAtX0;
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
+    private static final int TERRAIN_DEPTH = 20;
 
     /**
      * Constructs a terrain
      * @param gameObjects The collection of all participating game objects.
      * @param groundLayer  The number of the layer to which the created ground objects should be added.
      * @param windowDimensions  The dimensions of the windows.
-     * @param seed  A seed for a random number generator.
      */
-    public Terrain(GameObjectCollection gameObjects, int groundLayer, Vector2 windowDimensions, int seed){
+    public Terrain(GameObjectCollection gameObjects, int groundLayer, Vector2 windowDimensions){
         this.gameObjects = gameObjects;
         this.groundLayer = groundLayer;
-        groundHeightAtX0 = (2/3)* windowDimensions.x();
-        GameObject terrain = new GameObject(
-                Vector2.ZERO, new Vector2(300, 300) , new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR)));
-        terrain.setTag("ground");
-        gameObjects.addGameObject(terrain, Layer.STATIC_OBJECTS);
+        this.groundHeightAtX0 = windowDimensions.y();
+        this.groundHeightAtX0 = windowDimensions.y() * 2 / 3;
     } // end of constructor
 
     /**
@@ -38,7 +36,14 @@ public class Terrain {
      * @param maxX The upper bound of the given range (will be rounded to a multiple of Block.SIZE).
      */
     public void createInRange(int minX, int maxX){
-
+        Renderable ground = new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
+        for (int i = (int)((minX / Block.SIZE) * Block.SIZE); i < maxX; i += Block.SIZE){
+            for (int j = 0; j < TERRAIN_DEPTH; j++) {
+                Block block = new Block(new Vector2(i, groundHeightAt(i) + j*Block.SIZE), ground);
+                block.setTag("block");  // sets tag
+                gameObjects.addGameObject(block, groundLayer); // adds to gameObjects
+            } // end of inner for loop
+        } // end of outer for loop
     } // end of method createInRange
 
     /**
@@ -47,7 +52,7 @@ public class Terrain {
      * @return The ground height at the given location
      */
     public float groundHeightAt(float x){
-        return groundHeightAtX0;
+        return (int)((groundHeightAtX0 + (float) Math.sin(x/5) * Block.SIZE * 2)/30) * 30;
     } // end of method groundHeightAt
 
 } // end of class Terrain
