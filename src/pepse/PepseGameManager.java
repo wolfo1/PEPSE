@@ -43,10 +43,6 @@ public class PepseGameManager extends GameManager {
         terr.createInRange(0, (int)(BlocksInSeason * Block.SIZE));
     } // end of private method create terrain
 
-    // create block
-    private void createBlock(Vector2 windowDimensions){
-
-    } // end of private method createBlock
 
 
     /**
