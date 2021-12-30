@@ -26,28 +26,22 @@ public class PepseGameManager extends GameManager {
         this.windowController = windowController;
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
         windowDimensions = this.windowController.getWindowDimensions(); // gets window dimensions
-        //create sky
-        createSky(windowDimensions);
-        // create blocks
-        createTerrain(gameObjects(), windowDimensions);
+       //create sky
+        Sky.create( gameObjects(), windowDimensions , Layer.BACKGROUND);
+        // create terrain
+        Terrain terrain = new Terrain(this.gameObjects(), Layer.STATIC_OBJECTS, windowDimensions);
+        terrain.createInRange(0, (int)(BlocksInSeason * Block.SIZE));
+        // choses seeds
+        Random random = new Random();
+        int seed = random.nextInt(100);
+        // create trees
+        Tree tree = new Tree(this.gameObjects(), terrain, seed, ROOT_LAYER, LEAVES_LAYER);
+        tree.createInRange(0, (int)windowDimensions.x());
         // create night
         GameObject night = Night.create(gameObjects(), Layer.FOREGROUND, windowDimensions, 30);
         // create sun
         GameObject sun = Sun.create(gameObjects(), Layer.BACKGROUND, windowDimensions, 30);
     } // overrides initializeGame
-
-
-    // creates the sky
-    private void createSky(Vector2 windowDimensions){
-        Sky.create( gameObjects(), windowDimensions , Layer.BACKGROUND);
-    } // end of private method createSky
-
-    // creat terrain
-    private void createTerrain(GameObjectCollection gameObjects, Vector2 windowDimensions){
-        Terrain terr = new Terrain(gameObjects, Layer.STATIC_OBJECTS, windowDimensions);
-        terr.createInRange(0, (int)(BlocksInSeason * Block.SIZE));
-    } // end of private method create terrain
-
 
 
     /**
