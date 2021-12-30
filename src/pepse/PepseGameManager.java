@@ -1,6 +1,7 @@
 package pepse;
 
 import danogl.GameManager;
+import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
 import danogl.collisions.Layer;
 import danogl.gui.ImageReader;
@@ -11,7 +12,8 @@ import danogl.util.Vector2;
 import pepse.world.Block;
 import pepse.world.Sky;
 import pepse.world.Terrain;
-
+import pepse.world.daynight.Night;
+import pepse.world.daynight.Sun;
 
 public class PepseGameManager extends GameManager {
 
@@ -24,11 +26,14 @@ public class PepseGameManager extends GameManager {
         this.windowController = windowController;
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
         windowDimensions = this.windowController.getWindowDimensions(); // gets window dimensions
-
         //create sky
         createSky(windowDimensions);
         // create blocks
         createTerrain(gameObjects(), windowDimensions);
+        // create night
+        GameObject night = Night.create(gameObjects(), Layer.FOREGROUND, windowDimensions, 30);
+        // create sun
+        GameObject sun = Sun.create(gameObjects(), Layer.BACKGROUND, windowDimensions, 30);
     } // overrides initializeGame
 
 
