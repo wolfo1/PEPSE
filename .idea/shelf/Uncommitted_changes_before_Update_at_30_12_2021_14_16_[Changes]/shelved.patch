@@ -1,0 +1,58 @@
+Index: src/pepse/PepseGameManager.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package pepse;\r\n\r\nimport danogl.GameManager;\r\nimport danogl.GameObject;\r\nimport danogl.collisions.GameObjectCollection;\r\nimport danogl.collisions.Layer;\r\nimport danogl.gui.ImageReader;\r\nimport danogl.gui.SoundReader;\r\nimport danogl.gui.UserInputListener;\r\nimport danogl.gui.WindowController;\r\nimport danogl.gui.rendering.ImageRenderable;\r\nimport danogl.util.Vector2;\r\nimport pepse.world.Block;\r\nimport pepse.world.Sky;\r\nimport pepse.world.Terrain;\r\n\r\npublic class PepseGameManager extends GameManager {\r\n\r\n    private static final int SKYLAYER = 50; // need to decide the value later\r\n    private static final int BLOCKS_AMOUNT_OF_COL = 8;\r\n    private static final int BLOCKS_AMOUNT_OF_ROWS = 5;\r\n    private static final int INIT_X_COORDINATE = 50;\r\n    private static final int INIT_Y_COORDINATE = 45;\r\n    private WindowController windowController;\r\n    private Vector2 windowDimensions;\r\n\r\n    @Override\r\n    public void initializeGame(ImageReader imageReader, SoundReader soundReader, UserInputListener inputListener, WindowController windowController) {\r\n        this.windowController = windowController;\r\n        super.initializeGame(imageReader, soundReader, inputListener, windowController);\r\n        windowDimensions = this.windowController.getWindowDimensions(); // gets window dimensions\r\n\r\n        //create sky\r\n        createSky(windowDimensions);\r\n        // create blocks\r\n        Terrain terrain = new Terrain(gameObjects(), 100, windowDimensions, 10);\r\n    } // overrides initializeGame\r\n\r\n\r\n    // creates the sky\r\n    private void createSky(Vector2 windowDimensions){\r\n    Sky sky = new Sky();\r\n    sky.create(gameObjects(), windowDimensions, SKYLAYER);\r\n    } // end of private method createSky\r\n\r\n    // create block\r\n    private void createBlock(Vector2 windowDimensions){\r\n\r\n    } // end of private method createBlock\r\n\r\n\r\n    /**\r\n     * Runs the entire simulation.\r\n     * @param args This argument should not be used.\r\n     */\r\n    public static void main(String[] args){\r\n    new PepseGameManager().run();\r\n    } // end of main\r\n\r\n} // end of PepseGameManager\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/pepse/PepseGameManager.java b/src/pepse/PepseGameManager.java
+--- a/src/pepse/PepseGameManager.java	(revision 586821e2b1fde2689dac3bd0714b1e7668a6d845)
++++ b/src/pepse/PepseGameManager.java	(date 1640866412587)
+@@ -1,19 +1,15 @@
+ package pepse;
+ 
+ import danogl.GameManager;
+-import danogl.GameObject;
+-import danogl.collisions.GameObjectCollection;
+-import danogl.collisions.Layer;
+ import danogl.gui.ImageReader;
+ import danogl.gui.SoundReader;
+ import danogl.gui.UserInputListener;
+ import danogl.gui.WindowController;
+-import danogl.gui.rendering.ImageRenderable;
+ import danogl.util.Vector2;
+-import pepse.world.Block;
+ import pepse.world.Sky;
+ import pepse.world.Terrain;
+ 
++
+ public class PepseGameManager extends GameManager {
+ 
+     private static final int SKYLAYER = 50; // need to decide the value later
+Index: PEPSE.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<module type=\"JAVA_MODULE\" version=\"4\">\r\n  <component name=\"NewModuleRootManager\" inherit-compiler-output=\"true\">\r\n    <exclude-output />\r\n    <content url=\"file://$MODULE_DIR$\">\r\n      <sourceFolder url=\"file://$MODULE_DIR$/src\" isTestSource=\"false\" />\r\n    </content>\r\n    <orderEntry type=\"inheritedJdk\" />\r\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\r\n    <orderEntry type=\"module-library\">\r\n      <library>\r\n        <CLASSES>\r\n          <root url=\"jar://$MODULE_DIR$/../DanoGameLab/DanoGameLab.jar!/\" />\r\n        </CLASSES>\r\n        <JAVADOC />\r\n        <SOURCES />\r\n      </library>\r\n    </orderEntry>\r\n    <orderEntry type=\"library\" name=\"DanoGameLab\" level=\"project\" />\r\n  </component>\r\n</module>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/PEPSE.iml b/PEPSE.iml
+--- a/PEPSE.iml	(revision 586821e2b1fde2689dac3bd0714b1e7668a6d845)
++++ b/PEPSE.iml	(date 1640866103774)
+@@ -7,15 +7,6 @@
+     </content>
+     <orderEntry type="inheritedJdk" />
+     <orderEntry type="sourceFolder" forTests="false" />
+-    <orderEntry type="module-library">
+-      <library>
+-        <CLASSES>
+-          <root url="jar://$MODULE_DIR$/../DanoGameLab/DanoGameLab.jar!/" />
+-        </CLASSES>
+-        <JAVADOC />
+-        <SOURCES />
+-      </library>
+-    </orderEntry>
+     <orderEntry type="library" name="DanoGameLab" level="project" />
+   </component>
+ </module>
+\ No newline at end of file
