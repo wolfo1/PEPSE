@@ -9,7 +9,7 @@ import pepse.util.ColorSupplier;
 
 import java.awt.*;
 
-public class Terrain1 {
+public class Terrain {
     private GameObjectCollection gameObjects;
     private int groundLayer;
     private static float groundHeightAtX0;
@@ -22,7 +22,7 @@ public class Terrain1 {
      * @param windowDimensions  The dimensions of the windows.
      * @param seed  A seed for a random number generator.
      */
-    public Terrain1(GameObjectCollection gameObjects, int groundLayer, Vector2 windowDimensions, int seed){
+    public Terrain(GameObjectCollection gameObjects, int groundLayer, Vector2 windowDimensions, int seed){
         this.gameObjects = gameObjects;
         this.groundLayer = groundLayer;
         groundHeightAtX0 = (2/3)* windowDimensions.x();
@@ -30,7 +30,6 @@ public class Terrain1 {
                 Vector2.ZERO, new Vector2(300, 300) , new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR)));
         terrain.setTag("ground");
         gameObjects.addGameObject(terrain, Layer.STATIC_OBJECTS);
-        System.out.println("done");
     } // end of constructor
 
     /**

@@ -7,7 +7,7 @@ import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
 import danogl.util.Vector2;
 import pepse.world.Sky;
-import pepse.world.Terrain1;
+import pepse.world.Terrain;
 
 
 public class PepseGameManager extends GameManager {
@@ -29,7 +29,7 @@ public class PepseGameManager extends GameManager {
         //create sky
         createSky(windowDimensions);
         // create blocks
-        Terrain1 terrain = new Terrain1(gameObjects(), 100, windowDimensions, 10);
+        Terrain terrain = new Terrain(gameObjects(), 100, windowDimensions, 10);
     } // overrides initializeGame
 
 
