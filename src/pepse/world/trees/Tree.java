@@ -76,18 +76,18 @@ public class Tree {
                 Leaf leafBlock = createLeaf(locationOrigLeaf); // creates leaf with the original location of the leaf
                 leafAnimation(leafBlock); //uses animation for leaf
                 createLeafFallTask(leafBlock, locationOrigLeaf); // makes the leaf to fall
-                gameObjects.addGameObject(leafBlock, leavesLayer); //adds leaves to the game
+                gameObjects.addGameObject(leafBlock, leavesLayer); // Add leaves to the game
             } // end of inner for loop
         } // end of outer fol loop
     } // end of method create
 
-    // creats a tree trunk
+    // creates a tree trunk
     private void createTrunk(int groundHeight, int treeLocation, int rootHeight) {
         Vector2 blockSize = new Vector2(Block.SIZE, Block.SIZE);
         for (int i = 0; i < rootHeight; i++) {
             GameObject rootBlock = new GameObject(
                     new Vector2(treeLocation, groundHeight - (i*Block.SIZE)), blockSize,
-                    new RectangleRenderable(pepse.util.ColorSupplier.approximateColor( TRUNK_COLOUR, 10) ));
+                    new RectangleRenderable(pepse.util.ColorSupplier.approximateColor(TRUNK_COLOUR, 10) ));
             rootBlock.setTag("root");
             gameObjects.addGameObject(rootBlock, rootLayer);
         } // end of foor loop

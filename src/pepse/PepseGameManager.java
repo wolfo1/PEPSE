@@ -2,7 +2,6 @@ package pepse;
 
 import danogl.GameManager;
 import danogl.GameObject;
-import danogl.collisions.GameObjectCollection;
 import danogl.collisions.Layer;
 import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
@@ -23,6 +22,11 @@ import java.util.Random;
 
 public class PepseGameManager extends GameManager {
 
+    private static final int ROOT_LAYER = 100;
+    private static final int LEAVES_LAYER = 99;
+    private static final int NIGHT_CYCLE = 30;
+    private static final Color SUN_HALO_COLOR = new Color(255, 0, 0, 20);
+    private static final Color MOON_HALO_COLOR = new Color(255, 255, 255, 80);
     private WindowController windowController;
     private Vector2 windowDimensions;
     private static final int BlocksInSeason = 100;
@@ -37,22 +41,22 @@ public class PepseGameManager extends GameManager {
         // create terrain
         Terrain terrain = new Terrain(this.gameObjects(), Layer.STATIC_OBJECTS, windowDimensions);
         terrain.createInRange(0, (int)(BlocksInSeason * Block.SIZE));
-        // choses seeds
+        // choose seeds
         Random random = new Random();
         int seed = random.nextInt(100);
         // create trees
         Tree tree = new Tree(this.gameObjects(), terrain, seed, ROOT_LAYER, LEAVES_LAYER);
         tree.createInRange(0, (int)windowDimensions.x());
         // create night
-        GameObject night = Night.create(gameObjects(), Layer.FOREGROUND, windowDimensions, 30);
+        GameObject night = Night.create(gameObjects(), Layer.FOREGROUND, windowDimensions, NIGHT_CYCLE);
         // create sun
-        GameObject sun = Sun.create(gameObjects(), Layer.BACKGROUND, windowDimensions, 30);
+        GameObject sun = Sun.create(gameObjects(), Layer.BACKGROUND, windowDimensions, NIGHT_CYCLE);
         // create halo
-        GameObject sunHalo = SunHalo.create(gameObjects(), Layer.BACKGROUND + 1, sun, new Color(255, 255, 0, 20));
+        GameObject sunHalo = SunHalo.create(gameObjects(), Layer.BACKGROUND + 1, sun, SUN_HALO_COLOR);
         // create moon
-        GameObject moon = Moon.create(gameObjects(), Layer.BACKGROUND, windowDimensions, 30, imageReader);
+        GameObject moon = Moon.create(gameObjects(), Layer.BACKGROUND, windowDimensions, NIGHT_CYCLE, imageReader);
         // create moon halo
-        GameObject moonHalo = SunHalo.create(gameObjects(), Layer.BACKGROUND + 1, moon, new Color(255, 255, 255, 80));
+        GameObject moonHalo = SunHalo.create(gameObjects(), Layer.BACKGROUND + 1, moon, MOON_HALO_COLOR);
     } // overrides initializeGame
 
 
