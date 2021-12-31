@@ -65,10 +65,10 @@ public class Tree {
     public void createInRange(int minX, int maxX){
         int distance = minX % MINIMAL_DISTANCE_BETWEEN_TREES;
         minX = minX - distance;
-        for (int x = minX; x <= maxX; x += MINIMAL_DISTANCE_BETWEEN_TREES){ // loop from mimiaml value for x until maximum value for x
-            Random rando = new Random(Objects.hash(x, seed)); // adds tree to hash table
+        for (int i = minX; i <= maxX; i += MINIMAL_DISTANCE_BETWEEN_TREES){ // loop from mimiaml value for x until maximum value for x
+            Random rando = new Random(Objects.hash(i, seed)); // adds tree to hash table
             if (rando.nextFloat() < ODDS)
-                create(x, rando.nextInt(MAX_HEIGHT - MIN_HEIGHT) + MIN_HEIGHT);
+                create(i, rando.nextInt(MAX_HEIGHT - MIN_HEIGHT) + MIN_HEIGHT);
         } // end of for loop
     } // end of createInRange method
 
