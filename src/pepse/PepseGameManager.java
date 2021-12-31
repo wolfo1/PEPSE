@@ -22,21 +22,25 @@ import java.util.Random;
 
 public class PepseGameManager extends GameManager {
 
-    private static final int TRUNK_LAYER = 5;
-    private static final int LEAVES_LAYER = 15;
+    private static int TRUNK_LAYER = 5;
+    private static int LEAVES_LAYER = 15;
+    private static int GROUND_LAYER = 0 ;
+    private WindowController windowController;
+    private Vector2 windowDimensions;
     private static final int NIGHT_CYCLE = 30;
     private static final Color SUN_HALO_COLOR = new Color(255, 0, 0, 20);
     private static final Color MOON_HALO_COLOR = new Color(255, 255, 255, 80);
-    private WindowController windowController;
-    private Vector2 windowDimensions;
     private static final int BLOCKS = 100;
+    private String trunkTag = "trunk";
+    private String leafTag = "leaf";
+    private String groundTag = "ground";
 
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader, UserInputListener inputListener, WindowController windowController) {
         this.windowController = windowController;
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
         windowDimensions = this.windowController.getWindowDimensions(); // gets window dimensions
-        //create sky
+         //create sky
         Sky.create( gameObjects(), windowDimensions , Layer.BACKGROUND);
         // create terrain
         Terrain terrain = new Terrain(this.gameObjects(), Layer.STATIC_OBJECTS, windowDimensions);
@@ -45,9 +49,8 @@ public class PepseGameManager extends GameManager {
         Random random = new Random();
         int seed = random.nextInt(100);
         // create trees
-        Tree tree = new Tree(this.gameObjects(), terrain, seed, TRUNK_LAYER, LEAVES_LAYER);
+        Tree tree = new Tree(this.gameObjects(), terrain, seed, TRUNK_LAYER, LEAVES_LAYER,  trunkTag,  leafTag,  groundTag);
         tree.createInRange(0, (int)windowDimensions.x());
-        // create night
         GameObject night = Night.create(gameObjects(), Layer.FOREGROUND, windowDimensions, NIGHT_CYCLE);
         // create sun
         GameObject sun = Sun.create(gameObjects(), Layer.BACKGROUND, windowDimensions, NIGHT_CYCLE);
@@ -57,6 +60,11 @@ public class PepseGameManager extends GameManager {
         GameObject moon = Moon.create(gameObjects(), Layer.BACKGROUND, windowDimensions, NIGHT_CYCLE, imageReader);
         // create moon halo
         GameObject moonHalo = SunHalo.create(gameObjects(), Layer.BACKGROUND + 1, moon, MOON_HALO_COLOR);
+        
+        
+        
+        // Leaf and block colliding
+        gameObjects().layers().shouldLayersCollide(LEAVES_LAYER, GROUND_LAYER, true);
     } // overrides initializeGame
 
 
