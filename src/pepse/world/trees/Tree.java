@@ -22,13 +22,22 @@ public class Tree {
     private final int leavesLayer;
     private final int seed;
 
-    private static final int MINIMAL_DISTANCE_BETWEEN_TREES = 300 ;
-    private static final float FADEOUT_TIME = 10;
     private final Color LEAF_COLOUR = new Color(50,200,30);
     private final Color TRUNK_COLOUR =new Color(100,50,20);
-    private static final int MIN_HEIGHT = 5;
+    private static final int MINIMAL_DISTANCE_BETWEEN_TREES = 300 ;
+    private static final float FADEOUT_TIME = 10;
     private static final int MAX_HEIGHT = 10;
+    private static final int MIN_HEIGHT = 5;
     private static final float ODDS = 0.6f;
+    private final int COLOUR_DELTA = 10;
+    private final int LEAF_ANIMATION_WAIT_TIME = 19;
+    private final int LEAF_FALL_WAIT_TIME = 60;
+    private final int LEAF_FALL_DELAY = 7;
+    private final int TRANSITION_DELAY = 7;
+    private static final int ONE = 1;
+    private static final int TWO = 2;
+    private static final int THREE = 3;
+    private static final int FIVE = 5;
 
     /**
      * Responsible for the creation and management of trees.
@@ -75,35 +84,37 @@ public class Tree {
                 Vector2 locationOrigLeaf = new Vector2(i, groundHeight - j);
                 Leaf leafBlock = createLeaf(locationOrigLeaf); // creates leaf with the original location of the leaf
                 leafAnimation(leafBlock); //uses animation for leaf
-                createLeafFallTask(leafBlock, locationOrigLeaf); // makes the leaf to fall
-                gameObjects.addGameObject(leafBlock, leavesLayer); // Add leaves to the game
+                createLeafFall(leafBlock, locationOrigLeaf); // makes the leaf to fall
+                gameObjects.addGameObject(leafBlock, leavesLayer); //adds leaves to the game
             } // end of inner for loop
         } // end of outer fol loop
     } // end of method create
 
-    // creates a tree trunk
+    // creats a tree trunk
     private void createTrunk(int groundHeight, int treeLocation, int rootHeight) {
         Vector2 blockSize = new Vector2(Block.SIZE, Block.SIZE);
         for (int i = 0; i < rootHeight; i++) {
             GameObject rootBlock = new GameObject(
                     new Vector2(treeLocation, groundHeight - (i*Block.SIZE)), blockSize,
-                    new RectangleRenderable(pepse.util.ColorSupplier.approximateColor(TRUNK_COLOUR, 10) ));
+                    new RectangleRenderable(pepse.util.ColorSupplier.approximateColor( TRUNK_COLOUR, COLOUR_DELTA) ));
             rootBlock.setTag("root");
             gameObjects.addGameObject(rootBlock, rootLayer);
-        } // end of foor loop
+        } // end of for loop
     } // end of createTrunk method
 
     // Creates a leaf
     private Leaf createLeaf(Vector2 originalLeafLocation) {
         return new Leaf(originalLeafLocation, new Vector2(Block.SIZE, Block.SIZE),
-                new RectangleRenderable(pepse.util.ColorSupplier.approximateColor(LEAF_COLOUR, 20)));
+                new RectangleRenderable(pepse.util.ColorSupplier.approximateColor(LEAF_COLOUR, 2*COLOUR_DELTA)));
     } // end of private method create leaf
 
     // Animation of the leaf
     private void leafAnimation(Leaf leaf) {
-        new ScheduledTask(leaf, rand.nextInt(19) + 1, true,
+        // schedule a delay for leaf angle
+        new ScheduledTask(leaf, rand.nextInt(LEAF_ANIMATION_WAIT_TIME) + ONE, true,
                 () -> changeAngleTransition(leaf));
-        new ScheduledTask(leaf, rand.nextInt(19) + 1, true,
+        // schedule a delay for leaf width
+        new ScheduledTask(leaf, rand.nextInt(LEAF_ANIMATION_WAIT_TIME) + ONE, true,
                 () -> changeDimensionsTransition(leaf));
     } // end of private method
 
@@ -112,7 +123,7 @@ public class Tree {
         new Transition<>(
                 leaf,
                 (size) -> leaf.setDimensions(new Vector2(Block.SIZE + size, Block.SIZE + size)),
-                -1f, 4f, Transition.CUBIC_INTERPOLATOR_FLOAT, rand.nextInt(7) + 3,
+                -1f, 4f, Transition.CUBIC_INTERPOLATOR_FLOAT, rand.nextInt(TRANSITION_DELAY) + THREE,
                 Transition.TransitionType.TRANSITION_LOOP, null);
     } // end of private method
 
@@ -120,28 +131,28 @@ public class Tree {
     private void changeAngleTransition(Leaf leaf) {
         new Transition<>(leaf,
                 (angle) -> leaf.renderer().setRenderableAngle(angle), //moves the leaves in the air
-                0f, 5f, Transition.CUBIC_INTERPOLATOR_FLOAT, rand.nextInt(7) + 3,
+                0f, 5f, Transition.CUBIC_INTERPOLATOR_FLOAT, rand.nextInt(TRANSITION_DELAY) + THREE,
                 Transition.TransitionType.TRANSITION_LOOP, null
         );
     } //end of private method
 
     // In charge of the falling of the leaf
-    private void createLeafFallTask(Leaf leafBlock, Vector2 originalLeafLocation) {
-        leafBlock.renderer().setOpaqueness(1);
+    private void createLeafFall(Leaf leafBlock, Vector2 originalLeafLocation) {
+        leafBlock.renderer().setOpaqueness(ONE);
         leafBlock.setTopLeftCorner(originalLeafLocation);
         new ScheduledTask(
-                leafBlock, rand.nextInt(60) + 7, false,
+                leafBlock, rand.nextInt(LEAF_FALL_WAIT_TIME) + LEAF_FALL_DELAY, false,
                 () -> {
-                    leafBlock.initLeafVerticalFallTransition(leafBlock, rand.nextInt(5) + 2);   //  transition of vertical movement
+                    leafBlock.initLeafVerticalFallTransition(leafBlock, rand.nextInt(FIVE) + TWO);   //  transition of vertical movement
                     leafBlock.renderer().fadeOut(FADEOUT_TIME, () -> { // add fadeout time
-                        initLeafAfterlifeWaitTask(leafBlock, originalLeafLocation, rand.nextInt(5));}); // end of fadeout
+                        initLeafAfterFalling(leafBlock, originalLeafLocation, rand.nextInt(FIVE));}); // end of fadeout
                 }); // end of lambda
     } // end of private method
 
     // Initializes the leaf after task is done
-    private void initLeafAfterlifeWaitTask(Leaf leafBlock, Vector2 originalLeafLocation, int afterlifeTime) {
+    private void initLeafAfterFalling(Leaf leafBlock, Vector2 originalLeafLocation, int afterlifeTime) {
         new ScheduledTask(leafBlock, afterlifeTime, false,
-                () -> createLeafFallTask(leafBlock, originalLeafLocation));
+                () -> createLeafFall(leafBlock, originalLeafLocation));
     } // end of private method
 
     // The height of terrain at a certain point

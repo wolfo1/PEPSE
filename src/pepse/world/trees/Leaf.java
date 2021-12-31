@@ -39,10 +39,10 @@ public class Leaf extends GameObject {
     /**
      * Creates a Transition for vertical movement.
      * @param leaf the leaf to append the Transition to.
-     * @return the transition
+     * @return
      */
     public Transition<Float> initLeafVerticalFallTransition(GameObject leaf, int transitionTime) {
-        verticalTransition = new Transition<>(
+        verticalTransition = new Transition<Float>(
                 leaf,
                 (val) -> {
                     if(val < 2) {
