@@ -22,14 +22,14 @@ import java.util.Random;
 
 public class PepseGameManager extends GameManager {
 
-    private static final int ROOT_LAYER = 100;
-    private static final int LEAVES_LAYER = 99;
+    private static final int TRUNK_LAYER = 5;
+    private static final int LEAVES_LAYER = 15;
     private static final int NIGHT_CYCLE = 30;
     private static final Color SUN_HALO_COLOR = new Color(255, 0, 0, 20);
     private static final Color MOON_HALO_COLOR = new Color(255, 255, 255, 80);
     private WindowController windowController;
     private Vector2 windowDimensions;
-    private static final int BlocksInSeason = 100;
+    private static final int BLOCKS = 100;
 
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader, UserInputListener inputListener, WindowController windowController) {
@@ -40,12 +40,12 @@ public class PepseGameManager extends GameManager {
         Sky.create( gameObjects(), windowDimensions , Layer.BACKGROUND);
         // create terrain
         Terrain terrain = new Terrain(this.gameObjects(), Layer.STATIC_OBJECTS, windowDimensions);
-        terrain.createInRange(0, (int)(BlocksInSeason * Block.SIZE));
+        terrain.createInRange(0, (int)(BLOCKS * Block.SIZE));
         // choose seeds
         Random random = new Random();
         int seed = random.nextInt(100);
         // create trees
-        Tree tree = new Tree(this.gameObjects(), terrain, seed, ROOT_LAYER, LEAVES_LAYER);
+        Tree tree = new Tree(this.gameObjects(), terrain, seed, TRUNK_LAYER, LEAVES_LAYER);
         tree.createInRange(0, (int)windowDimensions.x());
         // create night
         GameObject night = Night.create(gameObjects(), Layer.FOREGROUND, windowDimensions, NIGHT_CYCLE);
