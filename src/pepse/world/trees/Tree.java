@@ -38,6 +38,9 @@ public class Tree {
     private static final int TWO = 2;
     private static final int THREE = 3;
     private static final int FIVE = 5;
+    private final String trunkTag;
+    private final String leafTag;
+    private final String groundTag;
 
     /**
      * Responsible for the creation and management of trees.
@@ -46,15 +49,22 @@ public class Tree {
      * @param seed The amount of seeds in the game
      * @param rootLayer The value of the root layer
      * @param leavesLayer The value of the leaves layer
+     * @param trunkTag Tag of the trunk of the tree
+     * @param groundTag Tag of the ground
+     * @param leafTag Tag of the leaves
      */
     public Tree(GameObjectCollection gameObjects, Terrain terrain,
-                int seed, int rootLayer, int leavesLayer) {
+                int seed, int rootLayer, int leavesLayer,
+                String trunkTag, String leafTag, String groundTag) {
         this.gameObjects = gameObjects;
         this.terrain = terrain;
         this.rand = new Random(seed);
         this.rootLayer = rootLayer;
         this.leavesLayer = leavesLayer;
         this.seed = seed;
+        this.trunkTag = trunkTag;
+        this.leafTag = leafTag;
+        this.groundTag = groundTag;
     } // end of constructor tree
 
     /**
@@ -73,11 +83,11 @@ public class Tree {
     } // end of createInRange method
 
     // creats a tree object
-    private void create(int loaction, int rootHeight) {
-        int groundHeight = heightAt(loaction); // the ground height at a certain location
-        createTrunk(groundHeight, loaction, rootHeight); // creates the trunk
+    private void create(int location, int rootHeight) {
+        int groundHeight = heightAt(location); // the ground height at a certain location
+        createTrunk(groundHeight, location, rootHeight); // creates the trunk
         int sizeTopTree = Block.SIZE*(rootHeight*2/3);
-        int col = loaction-sizeTopTree/2;
+        int col = location-sizeTopTree/2;
         int row = rootHeight*Block.SIZE-sizeTopTree/2;
         for (int i = col; i <= (col + sizeTopTree); i+=Block.SIZE) {
             for (int j = row; j <= row + sizeTopTree; j+=Block.SIZE) {
@@ -91,21 +101,22 @@ public class Tree {
     } // end of method create
 
     // creats a tree trunk
-    private void createTrunk(int groundHeight, int treeLocation, int rootHeight) {
+    private void createTrunk(int groundHeight, int location, int rootHeight) {
         Vector2 blockSize = new Vector2(Block.SIZE, Block.SIZE);
         for (int i = 0; i < rootHeight; i++) {
-            GameObject rootBlock = new GameObject(
-                    new Vector2(treeLocation, groundHeight - (i*Block.SIZE)), blockSize,
+            GameObject trunkBlock = new GameObject(
+                    new Vector2(location, groundHeight - (i*Block.SIZE)), blockSize,
                     new RectangleRenderable(pepse.util.ColorSupplier.approximateColor( TRUNK_COLOUR, COLOUR_DELTA) ));
-            rootBlock.setTag("root");
-            gameObjects.addGameObject(rootBlock, rootLayer);
+            trunkBlock.setTag(this.trunkTag);
+            gameObjects.addGameObject(trunkBlock, rootLayer);
         } // end of for loop
     } // end of createTrunk method
 
     // Creates a leaf
-    private Leaf createLeaf(Vector2 originalLeafLocation) {
-        return new Leaf(originalLeafLocation, new Vector2(Block.SIZE, Block.SIZE),
-                new RectangleRenderable(pepse.util.ColorSupplier.approximateColor(LEAF_COLOUR, 2*COLOUR_DELTA)));
+    private Leaf createLeaf(Vector2 location) {
+        return new Leaf(location, new Vector2(Block.SIZE, Block.SIZE),
+                new RectangleRenderable(pepse.util.ColorSupplier.approximateColor(LEAF_COLOUR, 2*COLOUR_DELTA))
+        ,this.leafTag, this.groundTag);
     } // end of private method create leaf
 
     // Animation of the leaf
@@ -137,22 +148,22 @@ public class Tree {
     } //end of private method
 
     // In charge of the falling of the leaf
-    private void createLeafFall(Leaf leafBlock, Vector2 originalLeafLocation) {
-        leafBlock.renderer().setOpaqueness(ONE);
-        leafBlock.setTopLeftCorner(originalLeafLocation);
+    private void createLeafFall(Leaf leaf, Vector2 location) {
+        leaf.renderer().setOpaqueness(ONE);
+        leaf.setTopLeftCorner(location);
         new ScheduledTask(
-                leafBlock, rand.nextInt(LEAF_FALL_WAIT_TIME) + LEAF_FALL_DELAY, false,
+                leaf, rand.nextInt(LEAF_FALL_WAIT_TIME) + LEAF_FALL_DELAY, false,
                 () -> {
-                    leafBlock.initLeafVerticalFallTransition(leafBlock, rand.nextInt(FIVE) + TWO);   //  transition of vertical movement
-                    leafBlock.renderer().fadeOut(FADEOUT_TIME, () -> { // add fadeout time
-                        initLeafAfterFalling(leafBlock, originalLeafLocation, rand.nextInt(FIVE));}); // end of fadeout
+                    leaf.initLeafVerticalFallTransition(leaf, rand.nextInt(FIVE) + TWO);   //  transition of vertical movement
+                    leaf.renderer().fadeOut(FADEOUT_TIME, () -> { // add fadeout time
+                        initLeafAfterFalling(leaf, location, rand.nextInt(FIVE));}); // end of fadeout
                 }); // end of lambda
     } // end of private method
 
     // Initializes the leaf after task is done
-    private void initLeafAfterFalling(Leaf leafBlock, Vector2 originalLeafLocation, int afterlifeTime) {
-        new ScheduledTask(leafBlock, afterlifeTime, false,
-                () -> createLeafFall(leafBlock, originalLeafLocation));
+    private void initLeafAfterFalling(Leaf leaf, Vector2 location, int afterlifeTime) {
+        new ScheduledTask(leaf, afterlifeTime, false,
+                () -> createLeafFall(leaf, location));
     } // end of private method
 
     // The height of terrain at a certain point
