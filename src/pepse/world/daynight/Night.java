@@ -11,7 +11,7 @@ import java.awt.*;
 
 public class Night {
     private static int index = 0;
-    private static final float MIDNIGHT_OPACITY = 0.5f;
+    private static final float MIDNIGHT_OPACITY = 0.8f;
     /**
      * A method that creats the night GameObject
      * @param gameObjects The collection of all participating game objects.

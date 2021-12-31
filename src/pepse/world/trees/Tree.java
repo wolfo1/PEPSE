@@ -15,8 +15,8 @@ import java.util.Random;
 
 public class Tree {
 
-    private final GameObjectCollection gameObjects;
     private final Terrain terrain;
+    private final GameObjectCollection gameObjects;
     private final Random rand;
     private final int rootLayer;
     private final int leavesLayer;
