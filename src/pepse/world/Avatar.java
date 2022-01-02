@@ -19,17 +19,20 @@ public class Avatar extends GameObject {
     private static final float MAX_SPEED = 300;
     private static final String JUMP_SOUND_PATH = "assets/jump.wav";
     private static final String FLIGHT_SOUND_PATH = "assets/fly.wav";
-    private static final String[] WALK_ANIMATION=  {"assets/walk1.png", "assets/walk2.png"};
+    private static final String[] WALK_PATH =  {"assets/walk1.png", "assets/walk2.png"};
+    private static final String[] MODEL_PATH = {"assets/model1.png", "assets/model2.png"};
     private static final String JUMP_PATH = "assets/jump.png";
-    private static final String MODEL_PATH = "assets/model.png";
+    private static final String FLY_PATH = "assets/fly.png";
 
     // used for flight.
     private float energy = 100;
-    // true is right, false is left
+    // used for sound management
+    private boolean inFlight = false;
     private final UserInputListener inputListener;
-    private final AnimationRenderable walkAnimation;
+    private final Renderable walkAnimation;
     private final Renderable modelAnimation;
     private final Renderable jumpAnimation;
+    private final Renderable flyAnimation;
     private Sound jumpSound = null;
     private Sound flightSound = null;
 
@@ -39,7 +42,8 @@ public class Avatar extends GameObject {
         this.inputListener = inputListener;
         this.modelAnimation = renderable;
         this.jumpAnimation = imageReader.readImage(JUMP_PATH, true);
-        this.walkAnimation = new AnimationRenderable(WALK_ANIMATION, imageReader, true, 0.1);
+        this.walkAnimation = new AnimationRenderable(WALK_PATH, imageReader, true, 0.1);
+        this.flyAnimation = imageReader.readImage(FLY_PATH, true);
     }
 
     /**
@@ -53,8 +57,8 @@ public class Avatar extends GameObject {
      */
     public static Avatar create(GameObjectCollection gameObjects, int layer, Vector2 topLeftCorner,
                                 UserInputListener inputListener, ImageReader imageReader){
-        Renderable model = imageReader.readImage(MODEL_PATH, true);
-        Avatar avatar = new Avatar(topLeftCorner, Vector2.ONES.mult(50), model,
+        Renderable model = new AnimationRenderable(MODEL_PATH, imageReader, true, 0.3);
+        Avatar avatar = new Avatar(topLeftCorner, Vector2.ONES.mult(80), model,
                 inputListener, imageReader);
         avatar.physics().preventIntersectionsFromDirection(Vector2.ZERO);
         avatar.transform().setAccelerationY(GRAVITY);
@@ -70,10 +74,12 @@ public class Avatar extends GameObject {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
+        // max vertical speed to mitigate collision problems with the ground
         if (this.getVelocity().y() > MAX_SPEED) {
             this.setVelocity(new Vector2(getVelocity().x(), MAX_SPEED));
         }
         float xVel = 0;
+        // walk left
         if(inputListener.isKeyPressed(KeyEvent.VK_LEFT)) {
             xVel -= VELOCITY_X;
             renderer().setIsFlippedHorizontally(true);
@@ -82,6 +88,7 @@ public class Avatar extends GameObject {
                 this.renderer().setIsFlippedHorizontally(true);
             }
         }
+        // walk right
         else if(inputListener.isKeyPressed(KeyEvent.VK_RIGHT)) {
             xVel += VELOCITY_X;
             renderer().setIsFlippedHorizontally(false);
@@ -90,16 +97,22 @@ public class Avatar extends GameObject {
                 renderer().setIsFlippedHorizontally(false);
             }
         }
+        // move in xVel velocity
         transform().setVelocityX(xVel);
+        // fly
         if (inputListener.isKeyPressed(KeyEvent.VK_SPACE) && inputListener.isKeyPressed(KeyEvent.VK_SHIFT)) {
             if (this.energy > 0) {
-                this.renderer().setRenderable(this.jumpAnimation);
-                if (flightSound != null && getVelocity().y() == 0)
+                // play flightSound, only at the start of the flight.
+                if (flightSound != null && !inFlight)
                     flightSound.playLooped();
+                inFlight = true;
+                this.renderer().setRenderable(this.flyAnimation);
                 transform().setVelocityY(VELOCITY_Y);
-                this.energy = this.energy - 0.5f;
+                // energy consumption
+                this.energy -= 0.5;
             }
         }
+        // jump
         else if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) && getVelocity().y() == 0) {
             transform().setVelocityX(xVel);
             this.renderer().setRenderable(this.jumpAnimation);
@@ -107,10 +120,15 @@ public class Avatar extends GameObject {
             if (jumpSound != null)
                 jumpSound.play();
         }
-        if (!inputListener.isKeyPressed(KeyEvent.VK_SHIFT) && flightSound != null)
+
+        // if stops flying (by energy consumption on stop hitting shift), stop sound.
+        if ((!inputListener.isKeyPressed(KeyEvent.VK_SHIFT) || energy == 0) && flightSound != null) {
             flightSound.stopAllOccurences();
+            inFlight = false;
+        }
+        // regenerate energy while standing on something.
         if (getVelocity().y() == 0) {
-            this.energy = this.energy + 0.5f;
+            this.energy += 0.5;
             if (getVelocity().x() == 0)
                 this.renderer().setRenderable(modelAnimation);
         }
