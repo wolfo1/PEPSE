@@ -1,3 +1,4 @@
+
 package pepse.world.trees;
 
 import danogl.GameObject;
@@ -15,8 +16,8 @@ import java.util.Random;
 
 public class Tree {
 
-    private final Terrain terrain;
     private final GameObjectCollection gameObjects;
+    private final Terrain terrain;
     private final Random rand;
     private final int rootLayer;
     private final int leavesLayer;
@@ -50,8 +51,8 @@ public class Tree {
      * @param rootLayer The value of the root layer
      * @param leavesLayer The value of the leaves layer
      * @param trunkTag Tag of the trunk of the tree
-     * @param groundTag Tag of the ground
      * @param leafTag Tag of the leaves
+     * @param groundTag Tag of the ground
      */
     public Tree(GameObjectCollection gameObjects, Terrain terrain,
                 int seed, int rootLayer, int leavesLayer,
@@ -75,10 +76,10 @@ public class Tree {
     public void createInRange(int minX, int maxX){
         int distance = minX % MINIMAL_DISTANCE_BETWEEN_TREES;
         minX = minX - distance;
-        for (int i = minX; i <= maxX; i += MINIMAL_DISTANCE_BETWEEN_TREES){ // loop from mimiaml value for x until maximum value for x
-            Random rando = new Random(Objects.hash(i, seed)); // adds tree to hash table
-            if (rando.nextFloat() < ODDS)
-                create(i, rando.nextInt(MAX_HEIGHT - MIN_HEIGHT) + MIN_HEIGHT);
+        for (int i = minX; i <= maxX; i += MINIMAL_DISTANCE_BETWEEN_TREES){ // loop from minimal value for x until maximum value for x
+            Random random = new Random(Objects.hash(i, seed)); // adds tree to hash table
+            if (random.nextFloat() < ODDS)
+                create(i, random.nextInt(MAX_HEIGHT - MIN_HEIGHT) + MIN_HEIGHT);
         } // end of for loop
     } // end of createInRange method
 
@@ -92,10 +93,10 @@ public class Tree {
         for (int i = col; i <= (col + sizeTopTree); i+=Block.SIZE) {
             for (int j = row; j <= row + sizeTopTree; j+=Block.SIZE) {
                 Vector2 locationOrigLeaf = new Vector2(i, groundHeight - j);
-                Leaf leafBlock = createLeaf(locationOrigLeaf); // creates leaf with the original location of the leaf
-                leafAnimation(leafBlock); //uses animation for leaf
-                createLeafFall(leafBlock, locationOrigLeaf); // makes the leaf to fall
-                gameObjects.addGameObject(leafBlock, leavesLayer); //adds leaves to the game
+                Leaf leaf = createLeaf(locationOrigLeaf); // creates leaf with the original location of the leaf
+                leafAnimation(leaf); //uses animation for leaf
+                createLeafFall(leaf, locationOrigLeaf); // makes the leaf to fall
+                gameObjects.addGameObject(leaf, leavesLayer); //adds leaves to the game
             } // end of inner for loop
         } // end of outer fol loop
     } // end of method create
@@ -104,11 +105,11 @@ public class Tree {
     private void createTrunk(int groundHeight, int location, int rootHeight) {
         Vector2 blockSize = new Vector2(Block.SIZE, Block.SIZE);
         for (int i = 0; i < rootHeight; i++) {
-            GameObject trunkBlock = new GameObject(
+            GameObject trunk = new GameObject(
                     new Vector2(location, groundHeight - (i*Block.SIZE)), blockSize,
                     new RectangleRenderable(pepse.util.ColorSupplier.approximateColor( TRUNK_COLOUR, COLOUR_DELTA) ));
-            trunkBlock.setTag(this.trunkTag);
-            gameObjects.addGameObject(trunkBlock, rootLayer);
+            trunk.setTag(this.trunkTag);
+            gameObjects.addGameObject(trunk, rootLayer);
         } // end of for loop
     } // end of createTrunk method
 
@@ -116,7 +117,7 @@ public class Tree {
     private Leaf createLeaf(Vector2 location) {
         return new Leaf(location, new Vector2(Block.SIZE, Block.SIZE),
                 new RectangleRenderable(pepse.util.ColorSupplier.approximateColor(LEAF_COLOUR, 2*COLOUR_DELTA))
-        ,this.leafTag, this.groundTag);
+                ,this.leafTag, this.groundTag);
     } // end of private method create leaf
 
     // Animation of the leaf
@@ -172,3 +173,4 @@ public class Tree {
         return height -(height % Block.SIZE) - Block.SIZE; // returns the rounded height of tree
     } // end of private method heightAt
 } // end of class tree
+

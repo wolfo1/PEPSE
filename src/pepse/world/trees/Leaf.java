@@ -8,7 +8,7 @@ import danogl.util.Vector2;
 
 public class Leaf extends GameObject {
     private Transition<Float> horizontalTransition;
-    private String groundTag;
+    private final String groundTag;
     private boolean transitionExist = false;
 
     /**
