@@ -29,19 +29,28 @@ public class PepseGameManager extends GameManager {
     private WindowController windowController;
     private Vector2 windowDimensions;
     private static final int NIGHT_CYCLE = 30;
+    private static final float MIN_GAP = 20;
     private static final Color SUN_HALO_COLOR = new Color(255, 0, 0, 20);
     private static final Color MOON_HALO_COLOR = new Color(255, 255, 255, 80);
 
     //layers
-    private static final int TRUNK_LAYER = Layer.DEFAULT +  5;
-    private static final int LEAVES_LAYER = Layer.DEFAULT + 15;
+    private static final int SKY_LAYER = Layer.DEFAULT;
+    private static final int TRUNK_LAYER = Layer.DEFAULT + 8;
+    private static final int LEAVES_LAYER = Layer.DEFAULT + 10;
     private static final int GROUND_LAYER = Layer.DEFAULT + 2 ;
-    private static final int AVATAR_LAYER = Layer.DEFAULT ;
+    private static final int LOWER_GROUND_LAYER = Layer.DEFAULT -10 ;
+    private static final int AVATAR_LAYER = Layer.DEFAULT + 20;
+    private static final int MOON_LAYER = Layer.DEFAULT ;
+    private static final int MOON_HALO_LAYER = Layer.DEFAULT +1;
+    private static final int SUN_LAYER = Layer.DEFAULT + 10;
+    private static final int NIGHT_LAYER = Layer.FOREGROUND;
+    private static final int SUN_HALO_LAYER = Layer.DEFAULT + 11;
 
     //tags
     private static final String trunkTag = "trunk";
     private static final String leafTag = "leaf";
     private static final String groundTag = "ground";
+    private static final String lowerGroundTag = "lower ground";
 
     // game objects
     private Tree tree;
@@ -56,7 +65,7 @@ public class PepseGameManager extends GameManager {
     // camera
     private int leftPointer;
     private int rightPointer;
-    private int extendBy = 1 * Block.SIZE;;
+    private static final int extendBy = 20 * Block.SIZE;;
     private Terrain terrain;
 
 
@@ -65,9 +74,8 @@ public class PepseGameManager extends GameManager {
         this.windowController = windowController;
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
         windowDimensions = this.windowController.getWindowDimensions(); // gets window dimensions
-
         //create sky
-        Sky.create( gameObjects(), windowDimensions , Layer.BACKGROUND);
+        Sky.create( gameObjects(), windowDimensions , SKY_LAYER);
         // create terrain
         this.terrain = new Terrain(this.gameObjects(), GROUND_LAYER, windowDimensions);
         // choose seeds
@@ -76,15 +84,15 @@ public class PepseGameManager extends GameManager {
         // create trees
         this.tree = new Tree(this.gameObjects(), terrain, seed, TRUNK_LAYER, LEAVES_LAYER,  trunkTag,  leafTag,  groundTag);
         // create night
-        this.night = Night.create(gameObjects(), Layer.FOREGROUND, windowDimensions, NIGHT_CYCLE);
+        this.night = Night.create(gameObjects(), NIGHT_LAYER, windowDimensions, NIGHT_CYCLE);
         // create sun
-        this.sun = Sun.create(gameObjects(), Layer.BACKGROUND, windowDimensions, NIGHT_CYCLE);
+        this.sun = Sun.create(gameObjects(), SUN_LAYER, windowDimensions, NIGHT_CYCLE);
         // create halo
-        this.sunHalo = SunHalo.create(gameObjects(), Layer.BACKGROUND + 1, sun, SUN_HALO_COLOR);
+        this.sunHalo = SunHalo.create(gameObjects(), SUN_HALO_LAYER, sun, SUN_HALO_COLOR);
         // create moon
-        this.moon = Moon.create(gameObjects(), Layer.BACKGROUND, windowDimensions, NIGHT_CYCLE, imageReader);
+        this.moon = Moon.create(gameObjects(), MOON_LAYER, windowDimensions, NIGHT_CYCLE, imageReader);
         // create moon halo
-        this.moonHalo = SunHalo.create(gameObjects(), Layer.BACKGROUND + 1, moon, MOON_HALO_COLOR);
+        this.moonHalo = SunHalo.create(gameObjects(), MOON_HALO_LAYER, moon, MOON_HALO_COLOR);
         // create avatar
         this.avatar = Avatar.create(gameObjects(), AVATAR_LAYER, windowDimensions.mult(0.5f), inputListener, imageReader);
         this.avatar.setSounds(soundReader);
@@ -96,41 +104,38 @@ public class PepseGameManager extends GameManager {
         // Leaf and block colliding
         gameObjects().layers().shouldLayersCollide(LEAVES_LAYER, GROUND_LAYER, true);
         gameObjects().layers().shouldLayersCollide(AVATAR_LAYER, GROUND_LAYER, true);
-
     }// overrides initializeGame
 
-//    /**
-//     * Updates the world
-//     * @param deltaTime The current time.
-//     */
-//    @Override
-//    public void update(float deltaTime) {
-//        super.update(deltaTime);
-//        //the most right x coordinate
-//        float rightXCoordinate = camera.screenToWorldCoords(windowDimensions).x();
-//        // the most left x coordinate
-//        float leftXCoordinate = camera.screenToWorldCoords(windowDimensions).x() - windowDimensions.x();
-//        // checks if I need to extend to right
-//        if (rightXCoordinate >= this.rightPointer)
-//            extendRight(this.rightPointer, rightXCoordinate + extendBy);
-//        // checks if I need to extend to left
-//        if (leftXCoordinate <= this.leftPointer)
-//            extendLeft(leftXCoordinate, rightXCoordinate - extendBy);
-//    } //end of update
+    /**
+     * Updates the frame
+     * @param deltaTime Current time.
+     */
+    @Override
+    public void update(float deltaTime) {
+        super.update(deltaTime);
+        //the most right x coordinate
+        float rightXCoordinate = camera.screenToWorldCoords(windowDimensions).x();
+        // the most left x coordinate
+        float leftXCoordinate = camera.screenToWorldCoords(windowDimensions).x() - windowDimensions.x();
+        // checks if I need to extend to right
+        if (rightXCoordinate >= this.rightPointer)
+            extendRight(this.rightPointer, rightXCoordinate + extendBy);
+        // checks if I need to extend to left
+        if (leftXCoordinate <= this.leftPointer)
+            extendLeft(leftXCoordinate + MIN_GAP, this.leftPointer - extendBy);
+    } //end of update
 
     private void buildWorld(int start, int end){
         this.terrain.createInRange(start, end);
         this.tree.createInRange(start, end);
     } // end of build world
 
-
+    // builds initial world
     private void initialWorld() {
         float rightXCoordinate = camera.screenToWorldCoords(windowDimensions).x();
         float leftXCoordinate = camera.screenToWorldCoords(windowDimensions).x() - windowDimensions.x();
-        int normalizeStart = (int) (Math.floor(leftXCoordinate / Block.SIZE) * Block.SIZE); // normalize start position
-        int normalizeEnd = (int) (Math.floor(rightXCoordinate / Block.SIZE) * Block.SIZE); // normalize end position
-        this.leftPointer = normalizeStart - extendBy;
-        this.rightPointer = normalizeEnd + extendBy;
+        this.leftPointer = (int) (Math.floor(leftXCoordinate / Block.SIZE) * Block.SIZE) - extendBy;
+        this.rightPointer = (int) (Math.floor(rightXCoordinate / Block.SIZE) * Block.SIZE) + extendBy;
         buildWorld(this.leftPointer, this.rightPointer);
     } //build initial world
 
@@ -146,7 +151,7 @@ public class PepseGameManager extends GameManager {
                 removeObjects(obj);
         } //end of for loop
         this.rightPointer = normalizeEnd; //update right pointer
-        this.leftPointer = this.leftPointer + normalizeEnd - normalizeStart; //update left pointer
+        this.leftPointer += (normalizeEnd - normalizeStart); //update left pointer
     } // end of extendRight method
 
     // extends the world to the left
@@ -161,7 +166,7 @@ public class PepseGameManager extends GameManager {
                 removeObjects(obj);
         }// end of for loop
         this.leftPointer = normalizeEnd; //update left pointer
-        this.rightPointer = this.rightPointer - normalizeStart + normalizeEnd; //update right pointer
+        this.rightPointer -= (normalizeStart - normalizeEnd); //update right pointer
     } // end of extend left method
 
     // removes the objects
@@ -175,6 +180,8 @@ public class PepseGameManager extends GameManager {
         // remove leaves
         if (obj.getTag().equals(leafTag))
              gameObjects().removeGameObject(obj, LEAVES_LAYER);
+        if (obj.getTag().equals(lowerGroundTag))
+            gameObjects().removeGameObject(obj, LOWER_GROUND_LAYER);
     } // end of method remove objects
 
     /**
