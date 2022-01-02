@@ -8,6 +8,7 @@ import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
 import danogl.util.Vector2;
+import pepse.world.Avatar;
 import pepse.world.Block;
 import pepse.world.Sky;
 import pepse.world.Terrain;
@@ -58,9 +59,8 @@ public class PepseGameManager extends GameManager {
         GameObject moon = Moon.create(gameObjects(), Layer.BACKGROUND, windowDimensions, NIGHT_CYCLE, imageReader);
         // create moon halo
         GameObject moonHalo = SunHalo.create(gameObjects(), Layer.BACKGROUND + 1, moon, MOON_HALO_COLOR);
-
-
-
+        // create avatar
+        GameObject avatar = Avatar.create(gameObjects(), Layer.DEFAULT, windowDimensions.mult(0.5f), inputListener, imageReader);
         // Leaf and block colliding
         gameObjects().layers().shouldLayersCollide(LEAVES_LAYER, GROUND_LAYER, true);
     } // overrides initializeGame
