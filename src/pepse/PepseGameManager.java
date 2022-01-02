@@ -57,7 +57,7 @@ public class PepseGameManager extends GameManager {
     // camera
     private int leftPointer;
     private int rightPointer;
-    private int extendBy = 5 * Block.SIZE;;
+    private final int extendBy = 5 * Block.SIZE;;
     private Terrain terrain;
 
 
@@ -87,8 +87,8 @@ public class PepseGameManager extends GameManager {
         // create moon halo
         this.moonHalo = SunHalo.create(gameObjects(), Layer.BACKGROUND + 1, moon, MOON_HALO_COLOR);
         // create world
-        this.terrain.createInRange(0,  (int)(BLOCKS * Block.SIZE));
-        this.tree.createInRange(0,  (int)(BLOCKS * Block.SIZE));
+        this.terrain.createInRange(0, (BLOCKS * Block.SIZE));
+        this.tree.createInRange(0,  (BLOCKS * Block.SIZE));
         // create avatar
         this.avatar = Avatar.create(gameObjects(), AVATAR_LAYER, windowDimensions.mult(0.5f), inputListener, imageReader);
         this.avatar.setSounds(soundReader);

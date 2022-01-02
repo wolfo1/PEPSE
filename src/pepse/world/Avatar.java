@@ -10,7 +10,6 @@ import danogl.gui.rendering.AnimationRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
-import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class Avatar extends GameObject {
@@ -27,7 +26,6 @@ public class Avatar extends GameObject {
     // used for flight.
     private float energy = 100;
     // true is right, false is left
-    private boolean direction = true;
     private final UserInputListener inputListener;
     private final AnimationRenderable walkAnimation;
     private final Renderable modelAnimation;
@@ -67,7 +65,7 @@ public class Avatar extends GameObject {
     public void setSounds(SoundReader soundReader) {
         this.jumpSound = soundReader.readSound(JUMP_SOUND_PATH);
         this.flightSound = soundReader.readSound(FLIGHT_SOUND_PATH);
-    }
+    } // end of class setSounds
 
     @Override
     public void update(float deltaTime) {
@@ -117,4 +115,4 @@ public class Avatar extends GameObject {
                 this.renderer().setRenderable(modelAnimation);
         }
     }
-} // end of class Avataer
+} // end of class Avatar
