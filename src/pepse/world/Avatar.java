@@ -2,7 +2,6 @@ package pepse.world;
 
 import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
-import danogl.components.ScheduledTask;
 import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
@@ -15,12 +14,13 @@ import java.awt.event.KeyEvent;
 
 public class Avatar extends GameObject {
     private static final float VELOCITY_X = 400;
-    private static final float VELOCITY_Y = -650;
+    private static final float VELOCITY_Y = -400;
     private static final float GRAVITY = 600;
     private static final float MAX_SPEED = 300;
     private static final Color AVATAR_COLOR = Color.DARK_GRAY;
 
-    private UserInputListener inputListener;
+    private float energy = 100;
+    private final UserInputListener inputListener;
     private SoundReader soundReader;
 
     public Avatar(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable,
@@ -63,8 +63,15 @@ public class Avatar extends GameObject {
         if(inputListener.isKeyPressed(KeyEvent.VK_RIGHT))
             xVel += VELOCITY_X;
         transform().setVelocityX(xVel);
+        if (inputListener.isKeyPressed(KeyEvent.VK_SPACE) && inputListener.isKeyPressed(KeyEvent.VK_SHIFT)) {
+            if (this.energy > 0) {
+                transform().setVelocityY(VELOCITY_Y);
+                this.energy = this.energy - 0.5f;
+            }
+        }
         if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) && getVelocity().y() == 0)
             transform().setVelocityY(VELOCITY_Y);
-
+        if (getVelocity().y() == 0)
+            this.energy = this.energy + 0.5f;
     }
 } // end of class Avataer
