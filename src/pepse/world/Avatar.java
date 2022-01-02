@@ -16,6 +16,7 @@ public class Avatar extends GameObject {
     private static final float VELOCITY_X = 400;
     private static final float VELOCITY_Y = -650;
     private static final float GRAVITY = 600;
+    private static final float MAX_SPEED = 300;
     private static final Color AVATAR_COLOR = Color.DARK_GRAY;
 
     private UserInputListener inputListener;
@@ -47,6 +48,8 @@ public class Avatar extends GameObject {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
+        if (this.getVelocity().y() > MAX_SPEED)
+                this.setVelocity(new Vector2(getVelocity().x(), MAX_SPEED));
         float xVel = 0;
         if(inputListener.isKeyPressed(KeyEvent.VK_LEFT))
             xVel -= VELOCITY_X;
