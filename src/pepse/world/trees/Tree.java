@@ -101,7 +101,7 @@ public class Tree {
         } // end of outer fol loop
     } // end of method create
 
-    // creats a tree trunk
+    // creates a tree trunk
     private void createTrunk(int groundHeight, int location, int rootHeight) {
         Vector2 blockSize = new Vector2(Block.SIZE, Block.SIZE);
         for (int i = 0; i < rootHeight; i++) {

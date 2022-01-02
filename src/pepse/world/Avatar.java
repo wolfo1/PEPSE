@@ -113,7 +113,7 @@ public class Avatar extends GameObject {
             }
         }
         // jump
-        else if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) && getVelocity().y() == 0) {
+        if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) && getVelocity().y() == 0) {
             transform().setVelocityX(xVel);
             this.renderer().setRenderable(this.jumpAnimation);
             transform().setVelocityY(VELOCITY_Y);

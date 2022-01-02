@@ -98,7 +98,7 @@ public class PepseGameManager extends GameManager {
         gameObjects().layers().shouldLayersCollide(AVATAR_LAYER, GROUND_LAYER, true);
 
     }// overrides initializeGame
-//
+
 //    /**
 //     * Updates the world
 //     * @param deltaTime The current time.
