@@ -4,7 +4,6 @@ import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
 import danogl.components.CoordinateSpace;
 import danogl.gui.rendering.OvalRenderable;
-import danogl.gui.rendering.RectangleRenderable;
 import danogl.util.Vector2;
 
 import java.awt.*;

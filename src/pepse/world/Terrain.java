@@ -9,8 +9,8 @@ import pepse.util.ColorSupplier;
 import java.awt.*;
 
 public class Terrain {
-    private GameObjectCollection gameObjects;
-    private int groundLayer;
+    private final GameObjectCollection gameObjects;
+    private final int groundLayer;
     private static float groundHeightAtX0;
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
     private static final int TERRAIN_DEPTH = 20;
@@ -26,8 +26,8 @@ public class Terrain {
     public Terrain(GameObjectCollection gameObjects, int groundLayer, Vector2 windowDimensions){
         this.gameObjects = gameObjects;
         this.groundLayer = groundLayer;
-        this.groundHeightAtX0 = windowDimensions.y();
-        this.groundHeightAtX0 = windowDimensions.y() * 2 / 3;
+        groundHeightAtX0 = windowDimensions.y();
+        groundHeightAtX0 = windowDimensions.y() * 2 / 3;
     } // end of constructor
 
     /**
@@ -36,9 +36,9 @@ public class Terrain {
      * @param maxX The upper bound of the given range (will be rounded to a multiple of Block.SIZE).
      */
     public void createInRange(int minX, int maxX){
-        Renderable ground = new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
-        for (int i = (int)((minX / Block.SIZE) * Block.SIZE); i < maxX; i += Block.SIZE){
+        for (int i = ((minX / Block.SIZE) * Block.SIZE); i < maxX; i += Block.SIZE){
             for (int j = 0; j < TERRAIN_DEPTH; j++) {
+                Renderable ground = new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
                 Block block = new Block(new Vector2(i, groundHeightAt(i) + j*Block.SIZE), ground);
                 gameObjects.addGameObject(block, groundLayer); // adds to gameObjects
                 if (j <2)

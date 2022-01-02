@@ -65,7 +65,7 @@ public class PepseGameManager extends GameManager {
     // camera
     private int leftPointer;
     private int rightPointer;
-    private static final int extendBy = 20 * Block.SIZE;;
+    private static final int extendBy = 20 * Block.SIZE;
     private Terrain terrain;
 
 

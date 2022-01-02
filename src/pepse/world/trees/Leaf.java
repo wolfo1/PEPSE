@@ -18,8 +18,8 @@ public class Leaf extends GameObject {
      *                      Note that (0,0) is the top-left corner of the window.
      * @param dimensions    Width and height in window coordinates.
      * @param renderable    The renderable representing the object. Can be null, in which case
-     * @praam leafTag Tag of the leaves
-     * @praam groundTag Tag of the terrain
+     * @param leafTag Tag of the leaves
+     * @param groundTag Tag of the terrain
      */
     public Leaf(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable, String leafTag, String groundTag) {
         super(topLeftCorner, dimensions, renderable);
@@ -44,7 +44,7 @@ public class Leaf extends GameObject {
     /**
      * Creates a Transition for vertical movement.
      * @param leaf the leaf to append the Transition to.
-     * @return
+     * @return the transition
      */
     public Transition<Float> initLeafVerticalFallTransition(GameObject leaf, int transitionTime) {
         if(!transitionExist) {

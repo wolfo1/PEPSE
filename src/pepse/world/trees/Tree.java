@@ -83,7 +83,7 @@ public class Tree {
         } // end of for loop
     } // end of createInRange method
 
-    // creats a tree object
+    // creates a tree object
     private void create(int location, int rootHeight) {
         int groundHeight = heightAt(location); // the ground height at a certain location
         createTrunk(groundHeight, location, rootHeight); // creates the trunk

@@ -8,7 +8,6 @@ import danogl.gui.rendering.OvalRenderable;
 import danogl.util.Vector2;
 
 import java.awt.*;
-import java.util.function.Consumer;
 
 public class Sun {
     private static int index = 0;
