@@ -4,6 +4,7 @@ import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
 import danogl.components.ScheduledTask;
 import danogl.gui.ImageReader;
+import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.rendering.OvalRenderable;
 import danogl.gui.rendering.Renderable;
@@ -20,6 +21,8 @@ public class Avatar extends GameObject {
     private static final Color AVATAR_COLOR = Color.DARK_GRAY;
 
     private UserInputListener inputListener;
+    private SoundReader soundReader;
+
     public Avatar(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable,
                   UserInputListener inputListener) {
         super(topLeftCorner, dimensions, renderable);
@@ -45,6 +48,10 @@ public class Avatar extends GameObject {
         return avatar;
     } // end of method create
 
+    public void setSoundReader(SoundReader soundReader) {
+        this.soundReader = soundReader;
+    }
+
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
@@ -56,13 +63,8 @@ public class Avatar extends GameObject {
         if(inputListener.isKeyPressed(KeyEvent.VK_RIGHT))
             xVel += VELOCITY_X;
         transform().setVelocityX(xVel);
-        if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) && inputListener.isKeyPressed(KeyEvent.VK_DOWN)) {
-            physics().preventIntersectionsFromDirection(null);
-            new ScheduledTask(this, .5f, false,
-                    ()->physics().preventIntersectionsFromDirection(Vector2.ZERO));
-            return;
-        }
         if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) && getVelocity().y() == 0)
             transform().setVelocityY(VELOCITY_Y);
+
     }
 } // end of class Avataer
