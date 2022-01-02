@@ -15,7 +15,8 @@ public class Terrain {
     private final int groundLayer;
     private static float groundHeightAtX0;
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
-    private static final int TERRAIN_DEPTH = 20;
+    private static final int TERRAIN_DEPTH = 20;    
+    private static final String groundTag = "ground";
 
     /**
      * Constructs a terrain
@@ -40,7 +41,7 @@ public class Terrain {
             for (int j = 0; j < TERRAIN_DEPTH; j++) {
                 Renderable ground = new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
                 Block block = new Block(new Vector2(i, groundHeightAt(i) + j*Block.SIZE), ground);
-                block.setTag("block");  // sets tag
+                block.setTag(groundTag);  // sets tag
                 gameObjects.addGameObject(block, groundLayer); // adds to gameObjects
             } // end of inner for loop
         } // end of outer for loop
