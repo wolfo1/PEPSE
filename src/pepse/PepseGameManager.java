@@ -34,9 +34,10 @@ public class PepseGameManager extends GameManager {
     private static final int BLOCKS = 100;
 
     //layers
-    private static int TRUNK_LAYER = 5;
-    private static int LEAVES_LAYER = 15;
-    private static int GROUND_LAYER = 0 ;
+    private static final int TRUNK_LAYER = Layer.DEFAULT +  5;
+    private static final int LEAVES_LAYER = Layer.DEFAULT + 15;
+    private static final int GROUND_LAYER = Layer.DEFAULT ;
+    private static final int AVATAR_LAYER = Layer.DEFAULT ;
 
     //tags
     private String trunkTag = "trunk";
@@ -65,17 +66,16 @@ public class PepseGameManager extends GameManager {
         this.windowController = windowController;
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
         windowDimensions = this.windowController.getWindowDimensions(); // gets window dimensions
+
         //create sky
         Sky.create( gameObjects(), windowDimensions , Layer.BACKGROUND);
         // create terrain
         this.terrain = new Terrain(this.gameObjects(), Layer.STATIC_OBJECTS, windowDimensions);
-        terrain.createInRange(0, (int)(BLOCKS * Block.SIZE));
         // choose seeds
         Random random = new Random();
         int seed = random.nextInt(100);
         // create trees
         this.tree = new Tree(this.gameObjects(), terrain, seed, TRUNK_LAYER, LEAVES_LAYER,  trunkTag,  leafTag,  groundTag);
-        tree.createInRange(0, (int)windowDimensions.x());
         // create night
         this.night = Night.create(gameObjects(), Layer.FOREGROUND, windowDimensions, NIGHT_CYCLE);
         // create sun
@@ -86,16 +86,38 @@ public class PepseGameManager extends GameManager {
         this.moon = Moon.create(gameObjects(), Layer.BACKGROUND, windowDimensions, NIGHT_CYCLE, imageReader);
         // create moon halo
         this.moonHalo = SunHalo.create(gameObjects(), Layer.BACKGROUND + 1, moon, MOON_HALO_COLOR);
+        // create world
+        this.terrain.createInRange(0,  (int)(BLOCKS * Block.SIZE));
+        this.tree.createInRange(0,  (int)(BLOCKS * Block.SIZE));
         // create avatar
-        this.avatar = Avatar.create(gameObjects(), Layer.DEFAULT, windowDimensions.mult(0.5f), inputListener, imageReader);
+        this.avatar = Avatar.create(gameObjects(), AVATAR_LAYER, windowDimensions.mult(0.5f), inputListener, imageReader);
+        this.avatar.setSounds(soundReader);
         // create camera
         this.camera = new Camera(this.avatar, Vector2.ZERO, windowDimensions, windowDimensions);
         setCamera(camera);
+        // build world
+        buildWorld();
         // Leaf and block colliding
         gameObjects().layers().shouldLayersCollide(LEAVES_LAYER, GROUND_LAYER, true);
+        gameObjects().layers().shouldLayersCollide(AVATAR_LAYER, GROUND_LAYER, true);
+    }// overrides initializeGame
 
-        }// overrides initializeGame
-
+    private void buildWorld() {
+        // left
+        float leftXCoordinate = camera.screenToWorldCoords(windowDimensions).x() - windowDimensions.x();
+        int normalizeStart = (int) (Math.floor(leftXCoordinate / Block.SIZE) * Block.SIZE); // normalize start position
+        // right
+        float rightXCoordinate = camera.screenToWorldCoords(windowDimensions).x();
+        int normalizeEnd = (int) (Math.floor(rightXCoordinate / Block.SIZE) * Block.SIZE); // normalize end position
+        this.leftPointer = normalizeStart - extendBy;
+        this.rightPointer = normalizeEnd + extendBy;
+        this.terrain.createInRange(this.leftPointer,  this.rightPointer);
+        this.tree.createInRange(this.leftPointer,  this.rightPointer);
+    }
+//    /**
+//     * Updates the world
+//     * @param deltaTime The current time.
+//     */
 //    @Override
 //    public void update(float deltaTime) {
 //        super.update(deltaTime);
@@ -104,18 +126,14 @@ public class PepseGameManager extends GameManager {
 //        // the most left x coordinate
 //        float leftXCoordinate = camera.screenToWorldCoords(windowDimensions).x() - windowDimensions.x();
 //        // checks if I need to extend to right
-//        float end;
-//        if (rightXCoordinate >= rightPointer) {
-//            end = rightXCoordinate + extendBy;
-//            extendRight(rightPointer, end);
-//        } // end of if rightXCoordinate >= rightPointer
+//        if (rightXCoordinate >= rightPointer)
+//            extendRight(rightPointer, rightXCoordinate + extendBy);
 //        // checks if I need to extend to left
-//        if (leftXCoordinate <= leftPointer) {
-//            end = rightXCoordinate + extendBy;
-//            extendLeft(leftXCoordinate, end);
-//        } // end of if leftXCoordinate <>>= leftPointer
+//        if (leftXCoordinate <= leftPointer)
+//            extendLeft(leftXCoordinate, rightXCoordinate - extendBy);
 //    } //end of update
 
+    // extends the world to the right
     private void extendRight(float start, float end){
         int normalizeStart = (int) (Math.floor(start / Block.SIZE) * Block.SIZE); // normalize start position
         int normalizeEnd = (int) (Math.floor(end / Block.SIZE) * Block.SIZE); // normalize end position
@@ -131,6 +149,7 @@ public class PepseGameManager extends GameManager {
        leftPointer = leftPointer + normalizeEnd - normalizeStart; //update left pointer
     } // end of extendRight method
 
+    // extends the world to the left
     private void extendLeft(float start, float end){
         int normalizeStart = (int) (Math.floor(start / Block.SIZE) * Block.SIZE); // normalize start position
         int normalizeEnd = (int) (Math.floor(end / Block.SIZE) * Block.SIZE); // normalize end position
@@ -146,6 +165,7 @@ public class PepseGameManager extends GameManager {
         rightPointer = rightPointer - normalizeStart + normalizeEnd; //update right pointer
     } // end of extend left method
 
+    // removes the objects
     private void removeObjects(GameObject obj){
         // remove ground
         if (obj.getTag().equals(groundTag))

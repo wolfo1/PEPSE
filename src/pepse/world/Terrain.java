@@ -11,8 +11,8 @@ import pepse.util.ColorSupplier;
 import java.awt.*;
 
 public class Terrain {
-    private GameObjectCollection gameObjects;
-    private int groundLayer;
+    private final GameObjectCollection gameObjects;
+    private final int groundLayer;
     private static float groundHeightAtX0;
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
     private static final int TERRAIN_DEPTH = 20;
