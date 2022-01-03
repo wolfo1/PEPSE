@@ -60,8 +60,8 @@ public class Avatar extends GameObject {
         Renderable model = new AnimationRenderable(MODEL_PATH, imageReader, true, 0.3);
         Avatar avatar = new Avatar(topLeftCorner, Vector2.ONES.mult(80), model,
                 inputListener, imageReader);
-        avatar.physics().preventIntersectionsFromDirection(Vector2.ZERO);
         avatar.transform().setAccelerationY(GRAVITY);
+        avatar.physics().preventIntersectionsFromDirection(Vector2.ZERO);
         gameObjects.addGameObject(avatar, layer);
         return avatar;
     } // end of method create

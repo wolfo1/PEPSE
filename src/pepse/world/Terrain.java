@@ -15,7 +15,7 @@ public class Terrain {
     private static float groundHeightAtX0;
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
     private static final int TERRAIN_DEPTH = 20;
-    private static final int LOWER_GROUND_LAYER = Layer.DEFAULT -10 ;
+    private static final int LOWER_GROUND_LAYER = Layer.DEFAULT - 10;
     private static final String groundTag =  "ground";
     private static final String lowerGroundTag = "lower ground";
 
@@ -46,7 +46,7 @@ public class Terrain {
                     gameObjects.addGameObject(block, groundLayer); // adds to gameObjects
                     block.setTag(groundTag);  // sets tag
                 }
-                else{
+                else {
                     gameObjects.addGameObject(block, LOWER_GROUND_LAYER); // adds to gameObjects
                     block.setTag(lowerGroundTag); // adds to gameObjects
                 }

@@ -34,17 +34,17 @@ public class PepseGameManager extends GameManager {
     private static final Color MOON_HALO_COLOR = new Color(255, 255, 255, 80);
 
     //layers
-    private static final int SKY_LAYER = Layer.DEFAULT - 30;
+    private static final int SKY_LAYER = Layer.BACKGROUND;
+    private static final int MOON_LAYER = Layer.BACKGROUND + 1;
+    private static final int SUN_LAYER = Layer.BACKGROUND + 1;
+    private static final int MOON_HALO_LAYER = Layer.BACKGROUND + 2;
+    private static final int SUN_HALO_LAYER = Layer.BACKGROUND + 2;
+    private static final int GROUND_LAYER = Layer.DEFAULT;
+    private static final int AVATAR_LAYER = Layer.DEFAULT;
+    private static final int LEAVES_LAYER = Layer.DEFAULT;
+    private static final int LOWER_GROUND_LAYER = Layer.DEFAULT + 5;
     private static final int TRUNK_LAYER = Layer.DEFAULT + 8;
-    private static final int LEAVES_LAYER = Layer.DEFAULT + 10;
-    private static final int GROUND_LAYER = Layer.DEFAULT + 2 ;
-    private static final int LOWER_GROUND_LAYER = Layer.DEFAULT -10 ;
-    private static final int AVATAR_LAYER = Layer.DEFAULT + 20;
-    private static final int MOON_LAYER = Layer.DEFAULT ;
-    private static final int MOON_HALO_LAYER = Layer.DEFAULT +1;
-    private static final int SUN_LAYER = Layer.DEFAULT + 10;
     private static final int NIGHT_LAYER = Layer.FOREGROUND;
-    private static final int SUN_HALO_LAYER = Layer.DEFAULT + 11;
 
     //tags
     private static final String trunkTag = "trunk";
@@ -60,23 +60,18 @@ public class PepseGameManager extends GameManager {
     private GameObject moon;
     private GameObject moonHalo;
     private Avatar avatar;
-    private Camera camera;
+    private Terrain terrain;
 
     // camera
+    private Camera camera;
     private int leftPointer;
     private int rightPointer;
     private static final int extendBy = 20 * Block.SIZE;
-    private Terrain terrain;
 
-    /**
-     * initializeGame in class danogl.GameManager
-     * @param imageReader - Contains a single method: readImage, which reads an image from disk. See its documentation for help.
-     * @param soundReader - Contains a single method: readSound, which reads a wav file from disk. See its documentation for he
-     * @param inputListener - Contains a single method: isKeyPressed, which returns whether a given key is currently pressed by the user or not. See its documentation.
-     * @param windowController - Contains an array of helpful, self explanatory methods concerning the window.
-     */
+
     @Override
-    public void initializeGame(ImageReader imageReader, SoundReader soundReader, UserInputListener inputListener, WindowController windowController) {
+    public void initializeGame(ImageReader imageReader, SoundReader soundReader,
+                               UserInputListener inputListener, WindowController windowController) {
         this.windowController = windowController;
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
         windowDimensions = this.windowController.getWindowDimensions(); // gets window dimensions
@@ -108,8 +103,6 @@ public class PepseGameManager extends GameManager {
         // create world
         initialWorld();
         // Leaf and block colliding
-        gameObjects().layers().shouldLayersCollide(LEAVES_LAYER, GROUND_LAYER, true);
-        gameObjects().layers().shouldLayersCollide(AVATAR_LAYER, GROUND_LAYER, true);
     }// overrides initializeGame
 
     /**
@@ -178,7 +171,7 @@ public class PepseGameManager extends GameManager {
     // removes the objects
     private void removeObjects(GameObject obj){
         // remove ground
-        if (obj.getTag() .equals(groundTag))
+        if (obj.getTag().equals(groundTag))
             gameObjects().removeGameObject(obj, GROUND_LAYER);
         // remove tree trunk
         if (obj.getTag().equals(trunkTag))
