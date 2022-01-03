@@ -1,6 +1,7 @@
 package pepse.world;
 
 import danogl.collisions.GameObjectCollection;
+import danogl.collisions.Layer;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
@@ -14,6 +15,7 @@ public class Terrain {
     private static float groundHeightAtX0;
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
     private static final int TERRAIN_DEPTH = 20;
+    private static final int LOWER_GROUND_LAYER = Layer.DEFAULT -10 ;
     private static final String groundTag =  "ground";
     private static final String lowerGroundTag = "lower ground";
 
@@ -40,11 +42,14 @@ public class Terrain {
             for (int j = 0; j < TERRAIN_DEPTH; j++) {
                 Renderable ground = new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
                 Block block = new Block(new Vector2(i, groundHeightAt(i) + j*Block.SIZE), ground);
-                gameObjects.addGameObject(block, groundLayer); // adds to gameObjects
-                if (j <2)
+                if (j <2) {
+                    gameObjects.addGameObject(block, groundLayer); // adds to gameObjects
                     block.setTag(groundTag);  // sets tag
-                else
+                }
+                else{
+                    gameObjects.addGameObject(block, LOWER_GROUND_LAYER); // adds to gameObjects
                     block.setTag(lowerGroundTag); // adds to gameObjects
+                }
             } // end of inner for loop
         } // end of outer for loop
     } // end of method createInRange
