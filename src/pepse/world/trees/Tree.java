@@ -74,6 +74,11 @@ public class Tree {
      * @param maxX The upper bound of the given range (will be rounded to a multiple of Block.SIZE).
      */
     public void createInRange(int minX, int maxX){
+        if(minX > maxX){
+            int temp = minX;
+            minX = maxX;
+            maxX = temp;
+        }
         int distance = minX % MINIMAL_DISTANCE_BETWEEN_TREES;
         minX = minX - distance;
         for (int i = minX; i <= maxX; i += MINIMAL_DISTANCE_BETWEEN_TREES){ // loop from minimal value for x until maximum value for x
