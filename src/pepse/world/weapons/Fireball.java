@@ -26,9 +26,10 @@ public class Fireball extends Projectile{
 
     private final float startLocation;
 
-    public Fireball(Vector2 topLeftCorner, GameObjectCollection gameObjects, int layer, ImageReader imageReader, SoundReader soundReader) {
+    public Fireball(Vector2 topLeftCorner, boolean direction, GameObjectCollection gameObjects, int layer,
+                    ImageReader imageReader, SoundReader soundReader) {
         super(topLeftCorner, DIMENSIONS, new AnimationRenderable(FIREBALL_IMAGE_PATH, imageReader, true, TIME_BETWEEN_CLIPS),
-                gameObjects, ACCELERATION_X);
+                gameObjects, ACCELERATION_X, direction);
         Fireball.isInstantiated = true;
         this.startLocation = topLeftCorner.x();
         soundReader.readSound(FIREBALL_SOUND_PATH).play();
@@ -40,11 +41,11 @@ public class Fireball extends Projectile{
         this.setHitEffect(hitEffect);
     }
 
-    public static Fireball create(Vector2 topLeftCorner, GameObjectCollection gameObjects ,
+    public static Fireball create(Vector2 topLeftCorner, boolean direction, GameObjectCollection gameObjects,
                                   int layer, ImageReader imageReader, SoundReader soundReader) {
         if (!Fireball.isInstantiated) {
-            Fireball fireball = new Fireball(topLeftCorner, gameObjects, layer, imageReader, soundReader);
-            gameObjects.addGameObject(fireball);
+            Fireball fireball = new Fireball(topLeftCorner, direction, gameObjects, layer, imageReader, soundReader);
+            gameObjects.addGameObject(fireball, layer);
             return fireball;
         }
         else

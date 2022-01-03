@@ -13,9 +13,13 @@ public abstract class Projectile extends GameObject {
     private Consumer<Vector2> hitEffect;
 
     public Projectile(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable,
-                      GameObjectCollection gameObjects, float accelerationX) {
+                      GameObjectCollection gameObjects, float accelerationX, boolean direction) {
         super(topLeftCorner, dimensions, renderable);
         this.gameObjects = gameObjects;
+        if (direction) {
+            accelerationX = -accelerationX;
+            renderer().setIsFlippedHorizontally(true);
+        }
         this.setVelocity(new Vector2(accelerationX, 0));
     }
 
