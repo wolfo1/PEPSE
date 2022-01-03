@@ -41,9 +41,9 @@ public class PepseGameManager extends GameManager {
     private static final int MOON_LAYER = Layer.BACKGROUND + 3;
     private static final int MOON_HALO_LAYER = Layer.BACKGROUND + 4;
     private static final int GROUND_LAYER = Layer.STATIC_OBJECTS;
-    private static final int LOWER_GROUND_LAYER = Layer.DEFAULT -10;
-    private static final int PROJECTILES_LAYER = Layer.DEFAULT - 5;
-    private static final int TRUNK_LAYER = Layer.DEFAULT - 5;
+    private static final int LOWER_GROUND_LAYER = Layer.DEFAULT - 10;
+    private static final int PROJECTILES_LAYER = Layer.DEFAULT - 9;
+    private static final int TRUNK_LAYER = Layer.DEFAULT - 9;
     private static final int LEAVES_LAYER = Layer.DEFAULT - 7;
     private static final int AVATAR_LAYER = Layer.DEFAULT;
     private static final int NIGHT_LAYER = Layer.FOREGROUND;
@@ -106,6 +106,7 @@ public class PepseGameManager extends GameManager {
         // Leaf and block colliding, projectiles colliding with specific layers
         gameObjects().layers().shouldLayersCollide(LEAVES_LAYER, GROUND_LAYER, true);
         gameObjects().layers().shouldLayersCollide(PROJECTILES_LAYER, TRUNK_LAYER, true);
+        gameObjects().layers().shouldLayersCollide(PROJECTILES_LAYER, LEAVES_LAYER, true);
         gameObjects().layers().shouldLayersCollide(PROJECTILES_LAYER, Layer.STATIC_OBJECTS, true);
     }// overrides initializeGame
 

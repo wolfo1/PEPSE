@@ -35,7 +35,6 @@ public class Avatar extends GameObject {
     private final Renderable flyAnimation;
     private final ImageReader imageReader;
     private final GameObjectCollection gameObjects;
-    private final int layer;
     private final int projectileLayer;
     // used for flight.
     private float energy = 100;
@@ -47,12 +46,11 @@ public class Avatar extends GameObject {
 
     public Avatar(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable,
                   UserInputListener inputListener, ImageReader imageReader, GameObjectCollection gameObjects,
-                  int selfLayer, int projectileLayer) {
+                  int projectileLayer) {
         super(topLeftCorner, dimensions, renderable);
         this.inputListener = inputListener;
         this.imageReader = imageReader;
         this.gameObjects = gameObjects;
-        this.layer = selfLayer;
         this.projectileLayer = projectileLayer;
         this.modelAnimation = renderable;
         this.jumpAnimation = imageReader.readImage(JUMP_PATH, true);
@@ -73,7 +71,7 @@ public class Avatar extends GameObject {
                                 UserInputListener inputListener, ImageReader imageReader){
         Renderable model = new AnimationRenderable(MODEL_PATH, imageReader, true, 0.3);
         Avatar avatar = new Avatar(topLeftCorner, Vector2.ONES.mult(80), model,
-                inputListener, imageReader, gameObjects, layer, projectileLayer);
+                inputListener, imageReader, gameObjects, projectileLayer);
         avatar.transform().setAccelerationY(GRAVITY);
         avatar.setTag(AVATAR_TAG);
         avatar.physics().preventIntersectionsFromDirection(Vector2.ZERO);
@@ -81,12 +79,20 @@ public class Avatar extends GameObject {
         return avatar;
     } // end of method create
 
+    /**
+     * allows to set Sound Reader and sounds to the avatar and it's weapons.
+     * @param soundReader SoundReader type.
+     */
     public void setSounds(SoundReader soundReader) {
         this.soundReader = soundReader;
         this.jumpSound = soundReader.readSound(JUMP_SOUND_PATH);
         this.flightSound = soundReader.readSound(FLIGHT_SOUND_PATH);
     } // end of class setSounds
 
+    /**
+     * movement left/right/jump/fly logic, and also fire weapons logic.
+     * @param deltaTime game time
+     */
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);

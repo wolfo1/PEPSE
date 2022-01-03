@@ -3,7 +3,6 @@ package pepse.world.weapons;
 import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
 import danogl.gui.ImageReader;
-import danogl.gui.Sound;
 import danogl.gui.SoundReader;
 import danogl.gui.rendering.AnimationRenderable;
 import danogl.util.Vector2;
@@ -54,7 +53,7 @@ public class Fireball extends Projectile{
 
     @Override
     public boolean shouldCollideWith(GameObject other) {
-        return !Objects.equals(other.getTag(), Avatar.AVATAR_TAG);
+        return (!other.getTag().equals(Avatar.AVATAR_TAG) && !other.getTag().equals(Explosion.EXPLOSION_TAG));
     }
 
     @Override
