@@ -77,6 +77,7 @@ public class PepseGameManager extends GameManager {
 
     private Random random;
     private ImageReader imageReader;
+    private SoundReader soundReader;
 
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader, UserInputListener inputListener, WindowController windowController) {
@@ -84,6 +85,7 @@ public class PepseGameManager extends GameManager {
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
         this.windowDimensions = windowController.getWindowDimensions(); // gets window dimensions
         this.imageReader = imageReader;
+        this.soundReader = soundReader;
         //create sky
         Sky.create( gameObjects(), windowDimensions , SKY_LAYER);
         // choose seeds
@@ -141,7 +143,7 @@ public class PepseGameManager extends GameManager {
         if (!Rain.isInstantiated && random.nextInt(CHANCE_FOR_RAIN) == 0) {
             // length can be between 400 and 1600 frames - approx. 10 to 40 seconds.
             int duration = random.nextInt( MAX_RAIN_DUARTION - MIN_RAIN_DURATION) + MIN_RAIN_DURATION;
-            Rain.create(gameObjects(), RAIN_LAYER, windowDimensions, imageReader, duration);
+            Rain.create(gameObjects(), RAIN_LAYER, windowDimensions, imageReader, soundReader, duration);
         }
     } //end of update
 
