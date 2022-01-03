@@ -26,10 +26,11 @@ import java.util.Random;
 public class PepseGameManager extends GameManager {
 
 
+    private static final int SEED = 100;
     private WindowController windowController;
     private Vector2 windowDimensions;
     private static final int NIGHT_CYCLE = 30;
-    private static final float MIN_GAP = 20;
+    private static final float MIN_GAP = 50;
     private static final Color SUN_HALO_COLOR = new Color(255, 0, 0, 20);
     private static final Color MOON_HALO_COLOR = new Color(255, 255, 255, 80);
 
@@ -39,10 +40,10 @@ public class PepseGameManager extends GameManager {
     private static final int SUN_LAYER = Layer.BACKGROUND + 1;
     private static final int MOON_HALO_LAYER = Layer.BACKGROUND + 2;
     private static final int SUN_HALO_LAYER = Layer.BACKGROUND + 2;
-    private static final int GROUND_LAYER = Layer.DEFAULT;
+    private static final int LOWER_GROUND_LAYER = Layer.DEFAULT -10 ;
     private static final int AVATAR_LAYER = Layer.DEFAULT;
+    private static final int GROUND_LAYER = Layer.DEFAULT;
     private static final int LEAVES_LAYER = Layer.DEFAULT;
-    private static final int LOWER_GROUND_LAYER = Layer.DEFAULT + 5;
     private static final int TRUNK_LAYER = Layer.DEFAULT + 8;
     private static final int NIGHT_LAYER = Layer.FOREGROUND;
 
@@ -60,18 +61,17 @@ public class PepseGameManager extends GameManager {
     private GameObject moon;
     private GameObject moonHalo;
     private Avatar avatar;
-    private Terrain terrain;
+    private Camera camera;
 
     // camera
-    private Camera camera;
     private int leftPointer;
     private int rightPointer;
-    private static final int extendBy = 20 * Block.SIZE;
+    private static final int extendBy = 50 * Block.SIZE;;
+    private Terrain terrain;
 
 
     @Override
-    public void initializeGame(ImageReader imageReader, SoundReader soundReader,
-                               UserInputListener inputListener, WindowController windowController) {
+    public void initializeGame(ImageReader imageReader, SoundReader soundReader, UserInputListener inputListener, WindowController windowController) {
         this.windowController = windowController;
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
         windowDimensions = this.windowController.getWindowDimensions(); // gets window dimensions
@@ -81,7 +81,7 @@ public class PepseGameManager extends GameManager {
         this.terrain = new Terrain(this.gameObjects(), GROUND_LAYER, windowDimensions);
         // choose seeds
         Random random = new Random();
-        int seed = random.nextInt(100);
+        int seed = random.nextInt(SEED);
         // create trees
         this.tree = new Tree(this.gameObjects(), terrain, seed, TRUNK_LAYER, LEAVES_LAYER,  trunkTag,  leafTag,  groundTag);
         // create night
@@ -142,9 +142,9 @@ public class PepseGameManager extends GameManager {
     private void extendRight(float start, float end){
         int normalizeStart = (int) (Math.floor(start / Block.SIZE) * Block.SIZE); // normalize start position
         int normalizeEnd = (int) (Math.floor(end / Block.SIZE) * Block.SIZE); // normalize end position
-        // build world to right
+        // extend right
         buildWorld(normalizeStart, normalizeEnd);
-        // remove world from left
+        // remove irrelevant objects from right
         for (GameObject obj : gameObjects()){
             if (obj.getCenter().x() < leftPointer)
                 removeObjects(obj);
@@ -157,9 +157,9 @@ public class PepseGameManager extends GameManager {
     private void extendLeft(float start, float end){
         int normalizeStart = (int) (Math.floor(start / Block.SIZE) * Block.SIZE); // normalize start position
         int normalizeEnd = (int) (Math.floor(end / Block.SIZE) * Block.SIZE); // normalize end position
-        // build world to left
+        // extend left
         buildWorld(normalizeStart, normalizeEnd);
-        // remove world from right
+        // remove irrelevant objects from right
         for (GameObject obj : gameObjects()){
             if (obj.getCenter().x() > this.rightPointer)
                 removeObjects(obj);
@@ -171,15 +171,16 @@ public class PepseGameManager extends GameManager {
     // removes the objects
     private void removeObjects(GameObject obj){
         // remove ground
-        if (obj.getTag().equals(groundTag))
+        if (obj.getTag() .equals(groundTag))
             gameObjects().removeGameObject(obj, GROUND_LAYER);
         // remove tree trunk
-        if (obj.getTag().equals(trunkTag))
+        else if (obj.getTag().equals(trunkTag))
              gameObjects().removeGameObject(obj, TRUNK_LAYER);
         // remove leaves
-        if (obj.getTag().equals(leafTag))
+        else if (obj.getTag().equals(leafTag))
              gameObjects().removeGameObject(obj, LEAVES_LAYER);
-        if (obj.getTag().equals(lowerGroundTag))
+        // remove bottom bricks
+        else if (obj.getTag().equals(lowerGroundTag))
             gameObjects().removeGameObject(obj, LOWER_GROUND_LAYER);
     } // end of method remove objects
 
