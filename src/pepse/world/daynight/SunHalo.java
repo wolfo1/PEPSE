@@ -9,7 +9,11 @@ import danogl.util.Vector2;
 import java.awt.*;
 
 public class SunHalo {
-    private static int index = 0;
+    private static final String HALO_TAG = "Halo";
+    private static final Vector2 HALO_DIMENSIONS = new Vector2(300, 300);
+    // there could be several halos for different objects, so a running index to differentiate them
+    private static int haloCount = 0;
+
     /**
      * A method that creates a SunHalo object.
      * @param gameObjects The collection of all participating game objects.
@@ -20,11 +24,12 @@ public class SunHalo {
      */
     public static GameObject create(GameObjectCollection gameObjects, int layer, GameObject sun, Color color){
         OvalRenderable renderable = new OvalRenderable(color);
-        GameObject halo = new GameObject(Vector2.ZERO, new Vector2(300, 300), renderable);
+        GameObject halo = new GameObject(Vector2.ZERO, HALO_DIMENSIONS, renderable);
         gameObjects.addGameObject(halo, layer);
         halo.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-        halo.setTag("halo " + SunHalo.index);
-        SunHalo.index ++;
+        halo.setTag(HALO_TAG + haloCount);
+        haloCount ++;
+        // move the halo according to the given object's location
         halo.addComponent(deltaTime -> halo.setCenter(sun.getCenter()));
         return halo;
     } // end of method create

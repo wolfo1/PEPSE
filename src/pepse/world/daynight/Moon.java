@@ -8,8 +8,14 @@ import danogl.gui.ImageReader;
 import danogl.util.Vector2;
 
 public class Moon {
-    private static final String renderablePath = "assets/moon.png";
-    private static int index = 0;
+    private static final String MOON_IMAGE_PATH = "assets/moon.png";
+    private static final String MOON_TAG = "moon";
+    private static final Vector2 DIMENSIONS = new Vector2(250, 250);
+    // the sun will revolve around the center of the screen + this offset
+    private static final Vector2 CENTER_OFFSET = new Vector2(0, 200);
+    // adds 100 to the horizontal axis of the circle around the center of the screen.
+    private static final int OVAL_A_OFFSET = 100;
+
     /**
      * A method that creates a moon object.
      * @param gameObjects  The collection of all participating game objects.
@@ -20,18 +26,19 @@ public class Moon {
      */
     public static GameObject create(GameObjectCollection gameObjects, int layer, Vector2 windowDimensions,
                                     float cycleLength, ImageReader imageReader){
-        GameObject sun = new GameObject(Vector2.ZERO, new Vector2(250, 250), imageReader.readImage(renderablePath, true));
-        sun.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-        gameObjects.addGameObject(sun, layer);
-        sun.setTag("moon " + Moon.index);
-        Moon.index ++;
-        Vector2 central = windowDimensions.mult(0.5f).add(new Vector2(0, 200));
+        // creates moon object and adds its to the game
+        GameObject moon = new GameObject(Vector2.ZERO, DIMENSIONS, imageReader.readImage(MOON_IMAGE_PATH, true));
+        moon.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
+        gameObjects.addGameObject(moon, layer);
+        moon.setTag(MOON_TAG);
+        Vector2 central = windowDimensions.mult(0.5f).add(CENTER_OFFSET);
+        // oval trajectory of the moon around the central point, adjusted to revolve counter to the sun.
         new Transition<>(
-                sun,
+                moon,
                 angle -> {
                     float cos = (float) Math.cos(Math.toRadians(angle));
                     float sin = (float) Math.sin(Math.toRadians(angle));
-                    sun.setCenter(new Vector2((central.x() + 100) * cos + central.x(),central.y() * sin + central.y()));
+                    moon.setCenter(new Vector2((central.x() + OVAL_A_OFFSET) * cos + central.x(),central.y() * sin + central.y()));
                 },
                 80f, // cycle of 360, adjusted to start in a position according to night cycle
                 470f,
@@ -39,7 +46,7 @@ public class Moon {
                 cycleLength,
                 Transition.TransitionType.TRANSITION_LOOP,
                 null);
-        return sun;
+        return moon;
     } // end of method create
 
 } // end of class Moon

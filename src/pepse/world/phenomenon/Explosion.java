@@ -65,7 +65,7 @@ public class Explosion extends GameObject{
     }
 
     /**
-     * explosion will not destroy the avatar or an explosion.
+     * explosion will not destroy the avatar or another explosion.
      * @param other game object collided with explosion
      * @return true if not avatar, false if avatar.
      */

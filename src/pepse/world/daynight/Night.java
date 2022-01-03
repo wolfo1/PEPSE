@@ -10,7 +10,7 @@ import danogl.util.Vector2;
 import java.awt.*;
 
 public class Night {
-    private static int index = 0;
+    private static final String NIGHT_TAG = "night";
     private static final float MIDNIGHT_OPACITY = 0.2f;
     /**
      * A method that creats the night GameObject
@@ -21,18 +21,18 @@ public class Night {
      * @return A new game object representing day-to-night transitions
      */
     public static GameObject create(GameObjectCollection gameObjects, int layer, Vector2 windowDimensions, float cycleLength){
+        // create a black rectangle covering the screen
         GameObject night = new GameObject(Vector2.ZERO, windowDimensions, new RectangleRenderable(Color.BLACK));
         night.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         gameObjects.addGameObject(night, layer);
-        night.setTag("Night " + Night.index);
-        Night.index ++;
+        night.setTag(NIGHT_TAG);
         new Transition<>(
                 night, // the game object being changed
                 night.renderer()::setOpaqueness, // the method to call
                 0f, // initial transition value
                 MIDNIGHT_OPACITY, // final transition value
                 Transition.CUBIC_INTERPOLATOR_FLOAT, // use a cubic interpolator
-                cycleLength / 2, // transtion fully over half a day
+                cycleLength / 2, // transition fully over half a day
                 Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
                 null); // nothing further to execute upon reaching final value
         return night;
