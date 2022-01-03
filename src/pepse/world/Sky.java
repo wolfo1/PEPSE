@@ -11,6 +11,7 @@ import java.awt.*;
 public class Sky {
 
     private static final Color BASIC_SKY_COLOR = Color.decode("#80C6E5");
+    private static final String SKY_TAG = "sky";
 
     /**
      * A method that creates a sky game object.
@@ -26,7 +27,7 @@ public class Sky {
 
         sky.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         gameObjects.addGameObject(sky, skyLayer);
-        sky.setTag("sky");
+        sky.setTag(SKY_TAG);
         return sky;
 
     } // end of method create

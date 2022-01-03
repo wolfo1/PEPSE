@@ -9,10 +9,14 @@ import danogl.gui.UserInputListener;
 import danogl.gui.rendering.AnimationRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
+import pepse.world.weapons.Fireball;
 
 import java.awt.event.KeyEvent;
 
 public class Avatar extends GameObject {
+    // used for collide checks for other objects
+    public static final String AVATAR_TAG = "avatar";
+
     private static final float VELOCITY_X = 400;
     private static final float VELOCITY_Y = -400;
     private static final float GRAVITY = 600;
@@ -24,22 +28,30 @@ public class Avatar extends GameObject {
     private static final String JUMP_PATH = "assets/jump.png";
     private static final String FLY_PATH = "assets/fly.png";
 
-    // used for flight.
-    private float energy = 100;
-    // used for sound management
-    private boolean inFlight = false;
     private final UserInputListener inputListener;
     private final Renderable walkAnimation;
     private final Renderable modelAnimation;
     private final Renderable jumpAnimation;
     private final Renderable flyAnimation;
+    private final ImageReader imageReader;
+    private final GameObjectCollection gameObjects;
+    private final int layer;
+    // used for flight.
+    private float energy = 100;
+    // used for sound management
+    private boolean inFlight = false;
+
     private Sound jumpSound = null;
     private Sound flightSound = null;
 
     public Avatar(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable,
-                  UserInputListener inputListener, ImageReader imageReader) {
+                  UserInputListener inputListener, ImageReader imageReader, GameObjectCollection gameObjects,
+                  int layer) {
         super(topLeftCorner, dimensions, renderable);
         this.inputListener = inputListener;
+        this.imageReader = imageReader;
+        this.gameObjects = gameObjects;
+        this.layer = layer;
         this.modelAnimation = renderable;
         this.jumpAnimation = imageReader.readImage(JUMP_PATH, true);
         this.walkAnimation = new AnimationRenderable(WALK_PATH, imageReader, true, 0.1);
@@ -59,8 +71,9 @@ public class Avatar extends GameObject {
                                 UserInputListener inputListener, ImageReader imageReader){
         Renderable model = new AnimationRenderable(MODEL_PATH, imageReader, true, 0.3);
         Avatar avatar = new Avatar(topLeftCorner, Vector2.ONES.mult(80), model,
-                inputListener, imageReader);
+                inputListener, imageReader, gameObjects, layer);
         avatar.transform().setAccelerationY(GRAVITY);
+        avatar.setTag(AVATAR_TAG);
         avatar.physics().preventIntersectionsFromDirection(Vector2.ZERO);
         gameObjects.addGameObject(avatar, layer);
         return avatar;
@@ -120,7 +133,11 @@ public class Avatar extends GameObject {
             if (jumpSound != null)
                 jumpSound.play();
         }
-
+        // fire a fireball
+        if (inputListener.isKeyPressed(KeyEvent.VK_G)) {
+            GameObject fireball = Fireball.create(this.getCenter().add(new Vector2(40, -20)),
+                                gameObjects, layer, imageReader);
+        }
         // if stops flying (by energy consumption on stop hitting shift), stop sound.
         if ((!inputListener.isKeyPressed(KeyEvent.VK_SHIFT) || energy == 0) && flightSound != null) {
             flightSound.stopAllOccurences();
