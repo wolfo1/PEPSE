@@ -40,7 +40,7 @@ public class Avatar extends GameObject {
     private float energy = 100;
     // used for sound management
     private boolean inFlight = false;
-
+    private SoundReader soundReader;
     private Sound jumpSound = null;
     private Sound flightSound = null;
 
@@ -80,6 +80,7 @@ public class Avatar extends GameObject {
     } // end of method create
 
     public void setSounds(SoundReader soundReader) {
+        this.soundReader = soundReader;
         this.jumpSound = soundReader.readSound(JUMP_SOUND_PATH);
         this.flightSound = soundReader.readSound(FLIGHT_SOUND_PATH);
     } // end of class setSounds
@@ -136,7 +137,7 @@ public class Avatar extends GameObject {
         // fire a fireball
         if (inputListener.isKeyPressed(KeyEvent.VK_G)) {
             GameObject fireball = Fireball.create(this.getCenter().add(new Vector2(40, -20)),
-                                gameObjects, layer, imageReader);
+                                gameObjects, layer, imageReader, soundReader);
         }
         // if stops flying (by energy consumption on stop hitting shift), stop sound.
         if ((!inputListener.isKeyPressed(KeyEvent.VK_SHIFT) || energy == 0) && flightSound != null) {

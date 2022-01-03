@@ -27,7 +27,6 @@ public abstract class Projectile extends GameObject {
 
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
-        System.out.println("hit!");
         super.onCollisionEnter(other, collision);
         hitEffect.accept(this.getCenter());
     }

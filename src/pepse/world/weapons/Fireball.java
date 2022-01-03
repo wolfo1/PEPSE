@@ -3,6 +3,8 @@ package pepse.world.weapons;
 import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
 import danogl.gui.ImageReader;
+import danogl.gui.Sound;
+import danogl.gui.SoundReader;
 import danogl.gui.rendering.AnimationRenderable;
 import danogl.util.Vector2;
 import pepse.world.Avatar;
@@ -14,6 +16,7 @@ import java.util.function.Consumer;
 public class Fireball extends Projectile{
     private static final int EXPLOSION_RADIUS = 100;
     private static final String[] FIREBALL_IMAGE_PATH = {"assets/fireball1.png", "assets/fireball2.png"};
+    private static final String FIREBALL_SOUND_PATH = "assets/fireball.wav";
     private static final double TIME_BETWEEN_CLIPS = 0.1;
     private static final float ACCELERATION_X = 300;
     private static final Vector2 DIMENSIONS = new Vector2(70, 30);
@@ -21,28 +24,26 @@ public class Fireball extends Projectile{
 
     private static boolean isInstantiated = false;
 
-    private final int layer;
     private final float startLocation;
 
-    public Fireball(Vector2 topLeftCorner, GameObjectCollection gameObjects, int layer, ImageReader imageReader) {
+    public Fireball(Vector2 topLeftCorner, GameObjectCollection gameObjects, int layer, ImageReader imageReader, SoundReader soundReader) {
         super(topLeftCorner, DIMENSIONS, new AnimationRenderable(FIREBALL_IMAGE_PATH, imageReader, true, TIME_BETWEEN_CLIPS),
                 gameObjects, ACCELERATION_X);
         Fireball.isInstantiated = true;
-        this.layer = layer;
         this.startLocation = topLeftCorner.x();
+        soundReader.readSound(FIREBALL_SOUND_PATH).play();
         Consumer<Vector2> hitEffect = hitLocation -> {
             gameObjects.removeGameObject(this, layer);
-            // GameObject explosion = Explosion.create(gameObjects, hitLocation, EXPLOSION_RADIUS);
-            // gameObjects.addGameObject(explosion, layer);
+            Explosion.create(gameObjects, hitLocation, EXPLOSION_RADIUS, imageReader, layer, soundReader);
             Fireball.isInstantiated = false;
             };
         this.setHitEffect(hitEffect);
     }
 
     public static Fireball create(Vector2 topLeftCorner, GameObjectCollection gameObjects ,
-                                  int layer, ImageReader imageReader) {
+                                  int layer, ImageReader imageReader, SoundReader soundReader) {
         if (!Fireball.isInstantiated) {
-            Fireball fireball = new Fireball(topLeftCorner, gameObjects, layer, imageReader);
+            Fireball fireball = new Fireball(topLeftCorner, gameObjects, layer, imageReader, soundReader);
             gameObjects.addGameObject(fireball);
             return fireball;
         }
