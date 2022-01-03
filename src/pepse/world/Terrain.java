@@ -12,6 +12,7 @@ import java.awt.*;
 public class Terrain {
     private final GameObjectCollection gameObjects;
     private final int groundLayer;
+    private final int seed;
     private static float groundHeightAtX0;
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
     private static final int TERRAIN_DEPTH = 20;
@@ -25,11 +26,11 @@ public class Terrain {
      * @param groundLayer  The number of the layer to which the created ground objects should be added.
      * @param windowDimensions  The dimensions of the windows.
      */
-    public Terrain(GameObjectCollection gameObjects, int groundLayer, Vector2 windowDimensions){
+    public Terrain(GameObjectCollection gameObjects, int groundLayer, Vector2 windowDimensions, int seed){
         this.gameObjects = gameObjects;
         this.groundLayer = groundLayer;
-        groundHeightAtX0 = windowDimensions.y();
-        groundHeightAtX0 = windowDimensions.y() * 2 / 3;
+        this.seed = seed;
+        this.groundHeightAtX0 = windowDimensions.y() * 2 / 3;
     } // end of constructor
 
     /**
@@ -38,7 +39,7 @@ public class Terrain {
      * @param maxX The upper bound of the given range (will be rounded to a multiple of Block.SIZE).
      */
     public void createInRange(int minX, int maxX){
-         if(minX > maxX){
+        if(minX > maxX){
             int temp = minX;
             minX = maxX;
             maxX = temp;
@@ -65,7 +66,7 @@ public class Terrain {
      * @return The ground height at the given location
      */
     public float groundHeightAt(float x){
-        return (int)((groundHeightAtX0 + (float) Math.sin(x/5) * Block.SIZE * 2)/Block.SIZE) * Block.SIZE;
+        return (int)((this.groundHeightAtX0 + (float) Math.sin(x/5) * Block.SIZE * 2)/Block.SIZE) * Block.SIZE;
     } // end of method groundHeightAt
 
 } // end of class Terrain
