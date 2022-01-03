@@ -36,15 +36,15 @@ public class PepseGameManager extends GameManager {
 
     //layers
     private static final int SKY_LAYER = Layer.BACKGROUND;
-    private static final int MOON_LAYER = Layer.BACKGROUND + 1;
     private static final int SUN_LAYER = Layer.BACKGROUND + 1;
-    private static final int MOON_HALO_LAYER = Layer.BACKGROUND + 2;
     private static final int SUN_HALO_LAYER = Layer.BACKGROUND + 2;
+    private static final int MOON_LAYER = Layer.BACKGROUND + 3;
+    private static final int MOON_HALO_LAYER = Layer.BACKGROUND + 4;
     private static final int LOWER_GROUND_LAYER = Layer.DEFAULT -10 ;
+    private static final int TRUNK_LAYER = Layer.DEFAULT - 8;
     private static final int AVATAR_LAYER = Layer.DEFAULT;
     private static final int GROUND_LAYER = Layer.DEFAULT;
     private static final int LEAVES_LAYER = Layer.DEFAULT;
-    private static final int TRUNK_LAYER = Layer.DEFAULT + 8;
     private static final int NIGHT_LAYER = Layer.FOREGROUND;
 
     //tags
