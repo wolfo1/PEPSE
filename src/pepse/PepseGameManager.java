@@ -96,8 +96,9 @@ public class PepseGameManager extends GameManager {
         // create moon halo
         this.moonHalo = SunHalo.create(gameObjects(), MOON_HALO_LAYER, moon, MOON_HALO_COLOR);
         // create avatar
-        this.avatar = Avatar.create(gameObjects(), AVATAR_LAYER, PROJECTILES_LAYER, windowDimensions.mult(0.5f), inputListener, imageReader);
+        this.avatar = Avatar.create(gameObjects(), AVATAR_LAYER, windowDimensions.mult(0.5f), inputListener, imageReader);
         this.avatar.setSounds(soundReader);
+        this.avatar.setProjectileLayer(PROJECTILES_LAYER);
         // create camera
         this.camera = new Camera(this.avatar, Vector2.ZERO, windowDimensions, windowDimensions);
         setCamera(camera);

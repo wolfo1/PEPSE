@@ -35,7 +35,7 @@ public class Avatar extends GameObject {
     private final Renderable flyAnimation;
     private final ImageReader imageReader;
     private final GameObjectCollection gameObjects;
-    private final int projectileLayer;
+    private int projectileLayer;
     // used for flight.
     private float energy = 100;
     // used for sound management
@@ -45,13 +45,11 @@ public class Avatar extends GameObject {
     private Sound flightSound = null;
 
     public Avatar(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable,
-                  UserInputListener inputListener, ImageReader imageReader, GameObjectCollection gameObjects,
-                  int projectileLayer) {
+                  UserInputListener inputListener, ImageReader imageReader, GameObjectCollection gameObjects) {
         super(topLeftCorner, dimensions, renderable);
         this.inputListener = inputListener;
         this.imageReader = imageReader;
         this.gameObjects = gameObjects;
-        this.projectileLayer = projectileLayer;
         this.modelAnimation = renderable;
         this.jumpAnimation = imageReader.readImage(JUMP_PATH, true);
         this.walkAnimation = new AnimationRenderable(WALK_PATH, imageReader, true, 0.1);
@@ -67,11 +65,11 @@ public class Avatar extends GameObject {
      * @param imageReader Used for reading images from disk or from within a jar.
      * @return A newly created representing the avatar.
      */
-    public static Avatar create(GameObjectCollection gameObjects, int layer,  int projectileLayer, Vector2 topLeftCorner,
+    public static Avatar create(GameObjectCollection gameObjects, int layer, Vector2 topLeftCorner,
                                 UserInputListener inputListener, ImageReader imageReader){
         Renderable model = new AnimationRenderable(MODEL_PATH, imageReader, true, 0.3);
         Avatar avatar = new Avatar(topLeftCorner, Vector2.ONES.mult(80), model,
-                inputListener, imageReader, gameObjects, projectileLayer);
+                inputListener, imageReader, gameObjects);
         avatar.transform().setAccelerationY(GRAVITY);
         avatar.setTag(AVATAR_TAG);
         avatar.physics().preventIntersectionsFromDirection(Vector2.ZERO);
@@ -88,6 +86,12 @@ public class Avatar extends GameObject {
         this.jumpSound = soundReader.readSound(JUMP_SOUND_PATH);
         this.flightSound = soundReader.readSound(FLIGHT_SOUND_PATH);
     } // end of class setSounds
+
+    /**
+     * sets the layer on which projectiles will be places
+     * @param projectileLayer the layer
+     */
+    public void setProjectileLayer(int projectileLayer) { this.projectileLayer = projectileLayer; }
 
     /**
      * movement left/right/jump/fly logic, and also fire weapons logic.
