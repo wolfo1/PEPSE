@@ -78,11 +78,11 @@ public class PepseGameManager extends GameManager {
         windowDimensions = this.windowController.getWindowDimensions(); // gets window dimensions
         //create sky
         Sky.create( gameObjects(), windowDimensions , SKY_LAYER);
-        // create terrain
-        this.terrain = new Terrain(this.gameObjects(), GROUND_LAYER, windowDimensions);
         // choose seeds
         Random random = new Random();
         int seed = random.nextInt(SEED);
+        // create terrain
+        this.terrain = new Terrain(this.gameObjects(), GROUND_LAYER, windowDimensions, seed);
         // create trees
         this.tree = new Tree(this.gameObjects(), terrain, seed, TRUNK_LAYER, LEAVES_LAYER,  trunkTag,  leafTag,  groundTag);
         // create night
