@@ -17,6 +17,7 @@ import pepse.world.daynight.Moon;
 import pepse.world.daynight.Night;
 import pepse.world.daynight.Sun;
 import pepse.world.daynight.SunHalo;
+import pepse.world.phenomenon.Rain;
 import pepse.world.trees.Tree;
 
 import java.awt.*;
@@ -25,11 +26,14 @@ import java.util.Random;
 
 public class PepseGameManager extends GameManager {
 
-
-    private static final int SEED = 100;
+    private static final int SEED = 100000;
     private WindowController windowController;
     private Vector2 windowDimensions;
     private static final int NIGHT_CYCLE = 30;
+    private static final int CHANCE_FOR_RAIN = 5000;
+    // rain duration is between 400 and 1600 frames, approx. 10 to 40 seconds.
+    private static final int MIN_RAIN_DURATION = 400;
+    private static final int MAX_RAIN_DUARTION = 1600;
     private static final float MIN_GAP = 50;
     private static final Color SUN_HALO_COLOR = new Color(255, 0, 0, 20);
     private static final Color MOON_HALO_COLOR = new Color(255, 255, 255, 80);
@@ -40,8 +44,9 @@ public class PepseGameManager extends GameManager {
     private static final int SUN_HALO_LAYER = Layer.BACKGROUND + 2;
     private static final int MOON_LAYER = Layer.BACKGROUND + 3;
     private static final int MOON_HALO_LAYER = Layer.BACKGROUND + 4;
+    private static final int LOWER_GROUND_LAYER = Layer.STATIC_OBJECTS - 1;
     private static final int GROUND_LAYER = Layer.STATIC_OBJECTS;
-    private static final int LOWER_GROUND_LAYER = Layer.DEFAULT - 10;
+    private static final int RAIN_LAYER = Layer.STATIC_OBJECTS - 2;
     private static final int PROJECTILES_LAYER = Layer.DEFAULT - 9;
     private static final int TRUNK_LAYER = Layer.DEFAULT - 9;
     private static final int LEAVES_LAYER = Layer.DEFAULT - 7;
@@ -70,16 +75,19 @@ public class PepseGameManager extends GameManager {
     private static final int extendBy = 50 * Block.SIZE;;
     private Terrain terrain;
 
+    private Random random;
+    private ImageReader imageReader;
 
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader, UserInputListener inputListener, WindowController windowController) {
         this.windowController = windowController;
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
-        windowDimensions = this.windowController.getWindowDimensions(); // gets window dimensions
+        this.windowDimensions = windowController.getWindowDimensions(); // gets window dimensions
+        this.imageReader = imageReader;
         //create sky
         Sky.create( gameObjects(), windowDimensions , SKY_LAYER);
         // choose seeds
-        Random random = new Random();
+        this.random = new Random();
         int seed = random.nextInt(SEED);
         // create terrain
         this.terrain = new Terrain(this.gameObjects(), GROUND_LAYER, windowDimensions, seed);
@@ -99,6 +107,7 @@ public class PepseGameManager extends GameManager {
         this.avatar = Avatar.create(gameObjects(), AVATAR_LAYER, windowDimensions.mult(0.5f), inputListener, imageReader);
         this.avatar.setSounds(soundReader);
         this.avatar.setProjectileLayer(PROJECTILES_LAYER);
+        Rain.isInstantiated = false;
         // create camera
         this.camera = new Camera(this.avatar, Vector2.ZERO, windowDimensions, windowDimensions);
         setCamera(camera);
@@ -128,6 +137,12 @@ public class PepseGameManager extends GameManager {
         // checks if I need to extend to left
         if (leftXCoordinate <= this.leftPointer)
             extendLeft(leftXCoordinate + MIN_GAP, this.leftPointer - extendBy);
+        // check for rain
+        if (!Rain.isInstantiated && random.nextInt(CHANCE_FOR_RAIN) == 0) {
+            // length can be between 400 and 1600 frames - approx. 10 to 40 seconds.
+            int duration = random.nextInt( MAX_RAIN_DUARTION - MIN_RAIN_DURATION) + MIN_RAIN_DURATION;
+            Rain.create(gameObjects(), RAIN_LAYER, windowDimensions, imageReader, duration);
+        }
     } //end of update
 
     private void buildWorld(int start, int end){
