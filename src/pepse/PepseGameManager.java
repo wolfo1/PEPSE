@@ -34,7 +34,7 @@ public class PepseGameManager extends GameManager {
     private static final Color MOON_HALO_COLOR = new Color(255, 255, 255, 80);
 
     //layers
-    private static final int SKY_LAYER = Layer.DEFAULT;
+    private static final int SKY_LAYER = Layer.DEFAULT - 30;
     private static final int TRUNK_LAYER = Layer.DEFAULT + 8;
     private static final int LEAVES_LAYER = Layer.DEFAULT + 10;
     private static final int GROUND_LAYER = Layer.DEFAULT + 2 ;
