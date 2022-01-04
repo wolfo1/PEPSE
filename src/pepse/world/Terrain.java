@@ -75,9 +75,9 @@ public class Terrain {
      * @return The ground height at the given location
      */
     public float groundHeightAt(float x){
-        float perlin = 50 * (int)(((float)( perlinNoise.noise(x) * Block.SIZE) )/Block.SIZE) * Block.SIZE;
+        float perlin = (int)(((float)( 3 * perlinNoise.noise(x) * Block.SIZE) )/Block.SIZE) * Block.SIZE;
         float temp = (float)((Math.sin(x/5) * Block.SIZE)/Block.SIZE) * Block.SIZE;
-        return (int)((this.groundHeightAtX0 + perlin + temp)/Block.SIZE) * Block.SIZE;
+       return (int)((this.groundHeightAtX0 + perlin + temp)/Block.SIZE) * Block.SIZE;
     } // end of method groundHeightAt
 
 } // end of class Terrain
