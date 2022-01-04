@@ -4,9 +4,23 @@ galbum
 UML DIFFERENCES:
 
 INFINITE WORLD:
-
+We implemented two methods, one for extending the world to the left and the other is extending to the right.
+They both receive two arguments: The start and end coordinate. Then, we normalize the start and end coordinates so it will be 
+coordinated with the block size. Then we build the world (terrain and trees) from the start until the end coordinate.
+The important thing is after creating the extention we delete every object which isn't shown in the image.
+We also used the override method of update so we could syncronize the movement of our avatar with the extention of the world.
 TREES PACKAGE:
-
+We used two classes: Leaf and Tree.
+The leaf class is in charge of the collision between the leaf and the ground.
+The tree class creates the trees in a given range, 
+We decided to implement a private method for every mission:
+create the tree trunk, create leaves, leaves falling, leaves animation, tree animation exc'
+Then we use one method (create) to gather everything and create one tree.
+Then the createInRange method is in charge of randomly choosing where to create the trees.
 DILEMMAS:
+We had a dilema of how to implement the Tree pacakge, because this package is very busy.
+In the beginning I thought I should implement a seperate class for the animation and another class for the transitions.
+I chose to use lambdas and callbacks instead. Then I could use the modularity principle and each private method 
+would be short and efficent.
 
 BONUS:
