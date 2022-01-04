@@ -105,7 +105,7 @@ public class PerlinNoise {
             size /= 2.0;
         }
 
-        return 5 * Math.sin ((value / initialSize));
+        return 5 * Math.sin ((value / initialSize) / 1.5);;
     }
 
     public double smoothNoise(double x, double y, double z) {
