@@ -3,10 +3,7 @@ package pepse;
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
-import danogl.gui.ImageReader;
-import danogl.gui.SoundReader;
-import danogl.gui.UserInputListener;
-import danogl.gui.WindowController;
+import danogl.gui.*;
 import danogl.gui.rendering.Camera;
 import danogl.util.Vector2;
 import pepse.world.Avatar;
@@ -25,10 +22,8 @@ import java.util.Random;
 
 
 public class PepseGameManager extends GameManager {
-
+    private static final String SOUNDTRACK_PATH = "assets/soundtrack.wav";
     private static final int SEED = 100000;
-    private WindowController windowController;
-    private Vector2 windowDimensions;
     private static final int NIGHT_CYCLE = 30;
     private static final int CHANCE_FOR_RAIN = 5000;
     // rain duration is between 400 and 1600 frames, approx. 10 to 40 seconds.
@@ -78,6 +73,8 @@ public class PepseGameManager extends GameManager {
     private Random random;
     private ImageReader imageReader;
     private SoundReader soundReader;
+    private WindowController windowController;
+    private Vector2 windowDimensions;
 
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader, UserInputListener inputListener, WindowController windowController) {
@@ -86,6 +83,8 @@ public class PepseGameManager extends GameManager {
         this.windowDimensions = windowController.getWindowDimensions(); // gets window dimensions
         this.imageReader = imageReader;
         this.soundReader = soundReader;
+        Sound sountrack = soundReader.readSound(SOUNDTRACK_PATH);
+        sountrack.playLooped();
         //create sky
         Sky.create( gameObjects(), windowDimensions , SKY_LAYER);
         // choose seeds
