@@ -47,7 +47,6 @@ public class PerlinNoise {
         for (int i = 0; i < 256; i++) {
             p[256 + i] = p[i] = permutation[i];
         }
-
     }
 
     public void setSeed(double seed) {
@@ -106,7 +105,7 @@ public class PerlinNoise {
             size /= 2.0;
         }
 
-        return value / initialSize;
+        return 5 * Math.sin ((value / initialSize));
     }
 
     public double smoothNoise(double x, double y, double z) {
