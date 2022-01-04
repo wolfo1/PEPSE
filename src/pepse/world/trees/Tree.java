@@ -29,7 +29,7 @@ public class Tree {
     private static final float FADEOUT_TIME = 10;
     private static final int MAX_HEIGHT = 10;
     private static final int MIN_HEIGHT = 5;
-    private static final float ODDS = 0.6f;
+    private static final float ODDS = 0.7f;
     private final int COLOUR_DELTA = 10;
     private final int LEAF_ANIMATION_WAIT_TIME = 19;
     private final int LEAF_FALL_WAIT_TIME = 60;
