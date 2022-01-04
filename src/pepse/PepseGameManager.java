@@ -25,6 +25,7 @@ public class PepseGameManager extends GameManager {
     private static final String SOUNDTRACK_PATH = "src/assets/soundtrack.wav";
     private static final int SEED = 100000;
     private static final int NIGHT_CYCLE = 30;
+    // rain will happen 1 in 5000 updates.
     private static final int CHANCE_FOR_RAIN = 5000;
     // rain duration is between 400 and 1600 frames, approx. 10 to 40 seconds.
     private static final int MIN_RAIN_DURATION = 400;
