@@ -15,16 +15,20 @@ import java.util.Objects;
 import java.util.Random;
 
 public class Tree {
-
+    // fields
     private final GameObjectCollection gameObjects;
     private final Terrain terrain;
     private final Random rand;
-    private final int rootLayer;
+    private final int trunkLayer;
     private final int leavesLayer;
     private final int seed;
-
+    private final String trunkTag;
+    private final String leafTag;
+    private final String groundTag;
+    //colours
     private final Color LEAF_COLOUR = new Color(50,200,30);
     private final Color TRUNK_COLOUR =new Color(100,50,20);
+    //constants
     private static final int MINIMAL_DISTANCE_BETWEEN_TREES = 300 ;
     private static final float FADEOUT_TIME = 10;
     private static final int MAX_HEIGHT = 10;
@@ -39,28 +43,25 @@ public class Tree {
     private static final int TWO = 2;
     private static final int THREE = 3;
     private static final int FIVE = 5;
-    private final String trunkTag;
-    private final String leafTag;
-    private final String groundTag;
 
     /**
      * Responsible for the creation and management of trees.
      * @param gameObjects The current game object in use
      * @param terrain The terrain of the game
      * @param seed The amount of seeds in the game
-     * @param rootLayer The value of the root layer
+     * @param trunkLayer The value of the root layer
      * @param leavesLayer The value of the leaves layer
      * @param trunkTag Tag of the trunk of the tree
      * @param leafTag Tag of the leaves
      * @param groundTag Tag of the ground
      */
     public Tree(GameObjectCollection gameObjects, Terrain terrain,
-                int seed, int rootLayer, int leavesLayer,
+                int seed, int trunkLayer, int leavesLayer,
                 String trunkTag, String leafTag, String groundTag) {
         this.gameObjects = gameObjects;
         this.terrain = terrain;
         this.rand = new Random(seed);
-        this.rootLayer = rootLayer;
+        this.trunkLayer = trunkLayer;
         this.leavesLayer = leavesLayer;
         this.seed = seed;
         this.trunkTag = trunkTag;
@@ -88,7 +89,7 @@ public class Tree {
         } // end of for loop
     } // end of createInRange method
 
-    // creates a tree object
+    // creats a tree object
     private void create(int location, int rootHeight) {
         int groundHeight = heightAt(location); // the ground height at a certain location
         createTrunk(groundHeight, location, rootHeight); // creates the trunk
@@ -106,7 +107,7 @@ public class Tree {
         } // end of outer fol loop
     } // end of method create
 
-    // creates a tree trunk
+    // creats a tree trunk
     private void createTrunk(int groundHeight, int location, int rootHeight) {
         Vector2 blockSize = new Vector2(Block.SIZE, Block.SIZE);
         for (int i = 0; i < rootHeight; i++) {
@@ -114,7 +115,7 @@ public class Tree {
                     new Vector2(location, groundHeight - (i*Block.SIZE)), blockSize,
                     new RectangleRenderable(pepse.util.ColorSupplier.approximateColor( TRUNK_COLOUR, COLOUR_DELTA) ));
             trunk.setTag(this.trunkTag);
-            gameObjects.addGameObject(trunk, rootLayer);
+            gameObjects.addGameObject(trunk, trunkLayer);
         } // end of for loop
     } // end of createTrunk method
 
@@ -160,14 +161,14 @@ public class Tree {
         new ScheduledTask(
                 leaf, rand.nextInt(LEAF_FALL_WAIT_TIME) + LEAF_FALL_DELAY, false,
                 () -> {
-                    leaf.initLeafVerticalFallTransition(leaf, rand.nextInt(FIVE) + TWO);   //  transition of vertical movement
+                    leaf.leafFallTransition(leaf, rand.nextInt(FIVE) + TWO);   //  transition of vertical movement
                     leaf.renderer().fadeOut(FADEOUT_TIME, () -> { // add fadeout time
-                        initLeafAfterFalling(leaf, location, rand.nextInt(FIVE));}); // end of fadeout
+                        leafAfterFalling(leaf, location, rand.nextInt(FIVE));}); // end of fadeout
                 }); // end of lambda
     } // end of private method
 
     // Initializes the leaf after task is done
-    private void initLeafAfterFalling(Leaf leaf, Vector2 location, int afterlifeTime) {
+    private void leafAfterFalling(Leaf leaf, Vector2 location, int afterlifeTime) {
         new ScheduledTask(leaf, afterlifeTime, false,
                 () -> createLeafFall(leaf, location));
     } // end of private method
