@@ -17,8 +17,8 @@ import java.util.function.Consumer;
  */
 public class Fireball extends Projectile{
     // animation and sound related
-    private static final String[] FIREBALL_IMAGE_PATH = {"assets/fireball1.png", "assets/fireball2.png"};
-    private static final String FIREBALL_SOUND_PATH = "assets/fireball.wav";
+    private static final String[] FIREBALL_IMAGE_PATH = {"src/assets/fireball1.png", "src/assets/fireball2.png"};
+    private static final String FIREBALL_SOUND_PATH = "src/assets/fireball.wav";
     private static final double TIME_BETWEEN_CLIPS = 0.1;
     private static final Vector2 DIMENSIONS = new Vector2(70, 30);
     // acceleration, maximum travel distance (explodes after reaching it), and explosion radius.

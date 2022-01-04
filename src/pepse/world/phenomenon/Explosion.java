@@ -15,10 +15,10 @@ import pepse.world.Avatar;
  * is done.
  */
 public class Explosion extends GameObject{
-    private static final String[] ANIMATION_PATH = {"assets/explosion1.png", "assets/explosion2.png",
-            "assets/explosion3.png", "assets/explosion4.png", "assets/explosion5.png",
-            "assets/explosion6.png", "assets/explosion7.png"};
-    private static final String SOUND_PATH = "assets/explosion.wav";
+    private static final String[] ANIMATION_PATH = {"src/assets/explosion1.png", "src/assets/explosion2.png",
+            "src/assets/explosion3.png", "src/assets/explosion4.png", "src/assets/explosion5.png",
+            "src/assets/explosion6.png", "src/assets/explosion7.png"};
+    private static final String SOUND_PATH = "src/assets/explosion.wav";
     private static final double TIME_BETWEEN_CLIPS = 0.1;
     private static final int EXPLOSION_TIME = 20; // in update frames
     public static final String EXPLOSION_TAG = "explosion";

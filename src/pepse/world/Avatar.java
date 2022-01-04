@@ -1,6 +1,7 @@
 package pepse.world;
 
 import danogl.GameObject;
+import danogl.collisions.Collision;
 import danogl.collisions.GameObjectCollection;
 import danogl.gui.ImageReader;
 import danogl.gui.Sound;
@@ -21,12 +22,12 @@ public class Avatar extends GameObject {
     private static final float VELOCITY_Y = -400;
     private static final float GRAVITY = 600;
     private static final float MAX_SPEED = 300;
-    private static final String JUMP_SOUND_PATH = "assets/jump.wav";
-    private static final String FLIGHT_SOUND_PATH = "assets/fly.wav";
-    private static final String[] WALK_PATH =  {"assets/walk1.png", "assets/walk2.png"};
-    private static final String[] MODEL_PATH = {"assets/model1.png", "assets/model2.png"};
-    private static final String JUMP_PATH = "assets/jump.png";
-    private static final String FLY_PATH = "assets/fly.png";
+    private static final String JUMP_SOUND_PATH = "src/assets/jump.wav";
+    private static final String FLIGHT_SOUND_PATH = "src/assets/fly.wav";
+    private static final String[] WALK_PATH =  {"src/assets/walk1.png", "src/assets/walk2.png"};
+    private static final String[] MODEL_PATH = {"src/assets/model1.png", "src/assets/model2.png"};
+    private static final String JUMP_PATH = "src/assets/jump.png";
+    private static final String FLY_PATH = "src/assets/fly.png";
 
     private final UserInputListener inputListener;
     private final Renderable walkAnimation;
@@ -97,6 +98,9 @@ public class Avatar extends GameObject {
      * movement left/right/jump/fly logic, and also fire weapons logic.
      * @param deltaTime game time
      */
+
+
+
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);

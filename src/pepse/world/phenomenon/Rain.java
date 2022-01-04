@@ -13,9 +13,9 @@ import danogl.util.Vector2;
 
 public class Rain extends GameObject {
     private static final String RAIN_TAG = "rain";
-    private static final String[] RAIN_ANIMATION = {"assets/rain1.png", "assets/rain2.png", "assets/rain3.png",
-                                                    "assets/rain4.png", "assets/rain5.png"};
-    private static final String RAIN_SOUND = "assets/rain.wav";
+    private static final String[] RAIN_ANIMATION = {"src/assets/rain1.png", "src/assets/rain2.png", "src/assets/rain3.png",
+                                                    "src/assets/rain4.png", "src/assets/rain5.png"};
+    private static final String RAIN_SOUND = "src/assets/rain.wav";
 
     public static boolean isInstantiated = false;
 

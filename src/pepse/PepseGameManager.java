@@ -22,7 +22,7 @@ import java.util.Random;
 
 
 public class PepseGameManager extends GameManager {
-    private static final String SOUNDTRACK_PATH = "assets/soundtrack.wav";
+    private static final String SOUNDTRACK_PATH = "src/assets/soundtrack.wav";
     private static final int SEED = 100000;
     private static final int NIGHT_CYCLE = 30;
     private static final int CHANCE_FOR_RAIN = 5000;
@@ -114,7 +114,7 @@ public class PepseGameManager extends GameManager {
         setCamera(camera);
         // create world
         initialWorld();
-        // Leaf and block colliding, projectiles colliding with specific layers 
+        // Leaf and block colliding, projectiles colliding with specific layers
         gameObjects().layers().shouldLayersCollide(LEAVES_LAYER, GROUND_LAYER, true);
         gameObjects().layers().shouldLayersCollide(PROJECTILES_LAYER, TRUNK_LAYER, true);
         gameObjects().layers().shouldLayersCollide(PROJECTILES_LAYER, LEAVES_LAYER, true);
