@@ -9,6 +9,7 @@ They both receive two arguments: The start and end coordinate. Then, we normaliz
 coordinated with the block size. Then we build the world (terrain and trees) from the start until the end coordinate.
 The important thing is after creating the extention we delete every object which isn't shown in the image.
 We also used the override method of update so we could syncronize the movement of our avatar with the extention of the world.
+
 TREES PACKAGE:
 We used two classes: Leaf and Tree.
 The leaf class is in charge of the collision between the leaf and the ground.
@@ -17,10 +18,28 @@ We decided to implement a private method for every mission:
 create the tree trunk, create leaves, leaves falling, leaves animation, tree animation exc'
 Then we use one method (create) to gather everything and create one tree.
 Then the createInRange method is in charge of randomly choosing where to create the trees.
+
 DILEMMAS:
-We had a dilema of how to implement the Tree pacakge, because this package is very busy.
+1. We had a dilema of how to implement the Tree pacakge, because this package is very busy.
 In the beginning I thought I should implement a seperate class for the animation and another class for the transitions.
 I chose to use lambdas and callbacks instead. Then I could use the modularity principle and each private method 
 would be short and efficent.
 
+2. When implementing a bonus class, Projectile, which is a class in the package Weapons, we had the dilemma which
+design to implemented. we wanted projectile to be modular for all kinds of projectiles, fireballs, arrows, rock,
+which look, behave and react when hitting an object in different ways, but their physics (in the game) is basically the same,
+acceleration in the X axis, a hit effect.
+we decided to implement an abstract class, Projectile, that all kinds of different projectiles can inherit from.
+For the hit effect we decided to add a "setHitEffect" method to set a Consumer<Vector2> callback, which gets the location
+of the hit and does some effect (like create an explosion in the case of the fireball).
+we decided to set the callback in a "set" method because we wanted the callback to be able to affect "this", and be able
+to use all the resources that the Projectile class has, like gameObjects, ImageReader, SoundReader and more.
+So in the end Projectile is a combination of an abstract class with a callback mechanism for the hit effect.
+
 BONUS:
+1. Fireballs! press F to cast a Fireball spell from the tip of your hands, and destroy anything in your path!
+   only 1 Fireball can be present on screen on each moment, and has a maximum distance travel of 1000 pixels.
+2. Moon & Rain. Like in our tiny country, our PEPSE world has a not so small chance for rain, which can last
+   from 10 to 40 seconds. Also, a moon accompanies our sun and replaces it when it goes down to brighten up the night.
+3. Immersion: Soundtrack, Soundeffects & animations. Relaxing music, sound effects to everything.
+   animations that range from 2 to 7 frames. The asset folder is becoming substantial.
