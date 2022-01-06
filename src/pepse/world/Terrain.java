@@ -16,16 +16,17 @@ public class Terrain {
     private static final float TWO_THIRDS = 2/3f;
     private static final int TWO = 2;
     private static final int TERRAIN_DEPTH = 20;
-    private static final int LOWER_GROUND_LAYER = Layer.DEFAULT - 10;
+    // subtract from groundLayer
+    private static final int LOWER_GROUND_LAYER = -10;
     // tags
     private static final String groundTag =  "ground";
     private static final String lowerGroundTag = "lower ground";
     // fields
     private final GameObjectCollection gameObjects;
     private final int groundLayer;
+    private int lowerGroundLayer;
     private static float groundHeightAtX0;
     private final PerlinNoise perlinNoise;
-
     /**
      * Constructs a terrain
      * @param gameObjects The collection of all participating game objects.
@@ -35,6 +36,7 @@ public class Terrain {
     public Terrain(GameObjectCollection gameObjects, int groundLayer, Vector2 windowDimensions, int seed){
         this.gameObjects = gameObjects;
         this.groundLayer = groundLayer;
+        this.lowerGroundLayer = groundLayer + LOWER_GROUND_LAYER;
         Terrain.groundHeightAtX0 = windowDimensions.y() * TWO_THIRDS;
         perlinNoise = new PerlinNoise();
         perlinNoise.setSeed(seed);
@@ -60,7 +62,7 @@ public class Terrain {
                     block.setTag(groundTag);  // sets tag
                 } // end of if
                 else {
-                    gameObjects.addGameObject(block, LOWER_GROUND_LAYER); // adds to gameObjects
+                    gameObjects.addGameObject(block, lowerGroundLayer); // adds to gameObjects
                     block.setTag(lowerGroundTag); // adds to gameObjects
                 } // end of else
             } // end of inner for loop

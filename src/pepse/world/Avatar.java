@@ -1,7 +1,10 @@
 package pepse.world;
 
 import danogl.GameObject;
+import danogl.collisions.Collision;
 import danogl.collisions.GameObjectCollection;
+import danogl.collisions.Layer;
+import danogl.components.ScheduledTask;
 import danogl.gui.ImageReader;
 import danogl.gui.Sound;
 import danogl.gui.SoundReader;
@@ -9,7 +12,11 @@ import danogl.gui.UserInputListener;
 import danogl.gui.rendering.AnimationRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
+import pepse.PepseGameManager;
+import pepse.ui.HPBar;
+import pepse.world.NPC.Enemy;
 import pepse.world.weapons.Fireball;
+import pepse.world.weapons.Projectile;
 
 import java.awt.event.KeyEvent;
 
@@ -22,8 +29,8 @@ public class Avatar extends GameObject {
     private static final float VELOCITY_X = 400;
     private static final float VELOCITY_Y = -400;
     private static final float GRAVITY = 600;
-    private static final float MAX_SPEED = 300;
-    // paths to assets (images and sounds)
+    private static final int AVATAR_HP = 3;
+    // assets
     private static final String JUMP_SOUND_PATH = "src/assets/jump.wav";
     private static final String FLIGHT_SOUND_PATH = "src/assets/fly.wav";
     private static final String[] WALK_PATH =  {"src/assets/walk1.png", "src/assets/walk2.png"};
@@ -32,25 +39,32 @@ public class Avatar extends GameObject {
     private static final double TIME_BETWEEN_MODEL = 0.3;
     private static final String JUMP_PATH = "src/assets/jump.png";
     private static final String FLY_PATH = "src/assets/fly.png";
-    //fields
-    private final UserInputListener inputListener;
+    private static final String GRAVE_PATH = "src/assets/grave.png";
+    private static final Vector2 GRAVE_DIMENSIONS = new Vector2(130, 120);
+    private static final float DEATH_DURATION = 5;
     private final Renderable walkAnimation;
     private final Renderable modelAnimation;
     private final Renderable jumpAnimation;
     private final Renderable flyAnimation;
-    private final ImageReader imageReader;
-    private final GameObjectCollection gameObjects;
+    //fields
+    private Terrain terrain;
     private int projectileLayer;
-    // used for flight.
-    private float energy = 100;
-    // used for sound management
+    private final int selfLayer;
+    private final ImageReader imageReader;
+    private final UserInputListener inputListener;
+    private final GameObjectCollection gameObjects;
+    private boolean isDead = false;
     private boolean inFlight = false;
+    private final HPBar hpBar;
+    private float energy = 100;
+    // sound
     private SoundReader soundReader;
     private Sound jumpSound = null;
     private Sound flightSound = null;
 
     public Avatar(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable,
-                  UserInputListener inputListener, ImageReader imageReader, GameObjectCollection gameObjects) {
+                  UserInputListener inputListener, ImageReader imageReader, GameObjectCollection gameObjects,
+                  int layer) {
         super(topLeftCorner, dimensions, renderable);
         this.inputListener = inputListener;
         this.imageReader = imageReader;
@@ -59,6 +73,9 @@ public class Avatar extends GameObject {
         this.jumpAnimation = imageReader.readImage(JUMP_PATH, true);
         this.walkAnimation = new AnimationRenderable(WALK_PATH, imageReader, true, TIME_BETWEEN_WALK);
         this.flyAnimation = imageReader.readImage(FLY_PATH, true);
+        this.selfLayer = layer;
+        this.hpBar = new HPBar(this, AVATAR_HP, imageReader, gameObjects);
+        gameObjects.addGameObject(hpBar, Layer.UI);
     }
 
     /**
@@ -74,7 +91,7 @@ public class Avatar extends GameObject {
                                 UserInputListener inputListener, ImageReader imageReader){
         Renderable model = new AnimationRenderable(MODEL_PATH, imageReader, true, TIME_BETWEEN_MODEL);
         Avatar avatar = new Avatar(topLeftCorner, Vector2.ONES.mult(AVATAR_SIZE), model,
-                inputListener, imageReader, gameObjects);
+                inputListener, imageReader, gameObjects, layer);
         avatar.transform().setAccelerationY(GRAVITY);
         avatar.setTag(AVATAR_TAG);
         avatar.physics().preventIntersectionsFromDirection(Vector2.ZERO);
@@ -98,20 +115,32 @@ public class Avatar extends GameObject {
      */
     public void setProjectileLayer(int projectileLayer) { this.projectileLayer = projectileLayer; }
 
+    public void setTerrain(Terrain terrain) { this.terrain = terrain;}
+
+    @Override
+    public void onCollisionEnter(GameObject other, Collision collision) {
+        super.onCollisionEnter(other, collision);
+        // if Avatar touches an enemy or gets hit by an enemy projectile, lower HP by 1.
+        if (other instanceof Enemy || other instanceof Projectile)
+            hpBar.removeHearts(1);
+    }
+
+    public boolean isDead() { return isDead; }
+
     /**
      * movement left/right/jump/fly logic, and also fire weapons logic.
      * @param deltaTime game time
      */
-
-
-
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        // max vertical speed to mitigate collision problems with the ground
-        if (this.getVelocity().y() > MAX_SPEED) {
-            this.setVelocity(new Vector2(getVelocity().x(), MAX_SPEED));
-        }
+        if (hpBar.getCurrHP() == 0)
+            die();
+        // check if character crossed the terrain
+//        float groundHeight = terrain.groundHeightAt(this.getCenter().x());
+//        if (getCenter().y() - (getDimensions().y() / 2) < groundHeight + 20) {
+//            this.setTopLeftCorner(new Vector2(getTopLeftCorner().x(), (float) (Math.floor(groundHeight) - getDimensions().y())));
+//        }
         float xVel = 0;
         // walk left
         if(inputListener.isKeyPressed(KeyEvent.VK_LEFT)) {
@@ -173,4 +202,20 @@ public class Avatar extends GameObject {
                 this.renderer().setRenderable(modelAnimation);
         }
     } // end of method update
+
+    private void die() {
+        gameObjects.removeGameObject(this, selfLayer);
+        Renderable graveRender = imageReader.readImage(GRAVE_PATH, true);
+        GameObject grave = new GameObject(this.getTopLeftCorner(), GRAVE_DIMENSIONS, graveRender);
+        gameObjects.addGameObject(grave, Layer.STATIC_OBJECTS);
+        grave.transform().setAccelerationY(GRAVITY);
+        grave.physics().preventIntersectionsFromDirection(Vector2.ZERO);
+        // delete bones after BONES_DURATION seconds.
+        new ScheduledTask(
+                grave,
+                DEATH_DURATION,
+                false,
+                () -> isDead = true
+        );
+    }
 } // end of class Avatar

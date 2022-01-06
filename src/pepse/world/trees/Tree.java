@@ -60,10 +60,10 @@ public class Tree {
                 String trunkTag, String leafTag, String groundTag) {
         this.gameObjects = gameObjects;
         this.terrain = terrain;
+        this.seed = seed;
         this.rand = new Random(seed);
         this.trunkLayer = trunkLayer;
         this.leavesLayer = leavesLayer;
-        this.seed = seed;
         this.trunkTag = trunkTag;
         this.leafTag = leafTag;
         this.groundTag = groundTag;
