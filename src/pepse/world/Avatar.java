@@ -1,7 +1,6 @@
 package pepse.world;
 
 import danogl.GameObject;
-import danogl.collisions.Collision;
 import danogl.collisions.GameObjectCollection;
 import danogl.gui.ImageReader;
 import danogl.gui.Sound;
@@ -17,18 +16,23 @@ import java.awt.event.KeyEvent;
 public class Avatar extends GameObject {
     // used for collide checks for other objects
     public static final String AVATAR_TAG = "avatar";
-
+    // constants
+    private static final int AVATAR_SIZE = 80;
+    private static final Vector2 PROJECTILE_EXIT_LOCATION = new Vector2(-60, 0);
     private static final float VELOCITY_X = 400;
     private static final float VELOCITY_Y = -400;
     private static final float GRAVITY = 600;
     private static final float MAX_SPEED = 300;
+    // paths to assets (images and sounds)
     private static final String JUMP_SOUND_PATH = "src/assets/jump.wav";
     private static final String FLIGHT_SOUND_PATH = "src/assets/fly.wav";
     private static final String[] WALK_PATH =  {"src/assets/walk1.png", "src/assets/walk2.png"};
+    private static final double TIME_BETWEEN_WALK = 0.1;
     private static final String[] MODEL_PATH = {"src/assets/model1.png", "src/assets/model2.png"};
+    private static final double TIME_BETWEEN_MODEL = 0.3;
     private static final String JUMP_PATH = "src/assets/jump.png";
     private static final String FLY_PATH = "src/assets/fly.png";
-
+    //fields
     private final UserInputListener inputListener;
     private final Renderable walkAnimation;
     private final Renderable modelAnimation;
@@ -53,7 +57,7 @@ public class Avatar extends GameObject {
         this.gameObjects = gameObjects;
         this.modelAnimation = renderable;
         this.jumpAnimation = imageReader.readImage(JUMP_PATH, true);
-        this.walkAnimation = new AnimationRenderable(WALK_PATH, imageReader, true, 0.1);
+        this.walkAnimation = new AnimationRenderable(WALK_PATH, imageReader, true, TIME_BETWEEN_WALK);
         this.flyAnimation = imageReader.readImage(FLY_PATH, true);
     }
 
@@ -68,8 +72,8 @@ public class Avatar extends GameObject {
      */
     public static Avatar create(GameObjectCollection gameObjects, int layer, Vector2 topLeftCorner,
                                 UserInputListener inputListener, ImageReader imageReader){
-        Renderable model = new AnimationRenderable(MODEL_PATH, imageReader, true, 0.3);
-        Avatar avatar = new Avatar(topLeftCorner, Vector2.ONES.mult(80), model,
+        Renderable model = new AnimationRenderable(MODEL_PATH, imageReader, true, TIME_BETWEEN_MODEL);
+        Avatar avatar = new Avatar(topLeftCorner, Vector2.ONES.mult(AVATAR_SIZE), model,
                 inputListener, imageReader, gameObjects);
         avatar.transform().setAccelerationY(GRAVITY);
         avatar.setTag(AVATAR_TAG);
@@ -144,7 +148,6 @@ public class Avatar extends GameObject {
         }
         // jump
         if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) && getVelocity().y() == 0) {
-            transform().setVelocityX(xVel);
             this.renderer().setRenderable(this.jumpAnimation);
             transform().setVelocityY(VELOCITY_Y);
             if (jumpSound != null)
@@ -154,7 +157,7 @@ public class Avatar extends GameObject {
         if (inputListener.isKeyPressed(KeyEvent.VK_G)) {
             Vector2 startingLocation = this.getCenter();
             if (renderer().isFlippedHorizontally())
-                startingLocation = startingLocation.add(new Vector2(-60, 0));
+                startingLocation = startingLocation.add(PROJECTILE_EXIT_LOCATION);
             Fireball.create(startingLocation, renderer().isFlippedHorizontally(),
                                 gameObjects, projectileLayer, imageReader, soundReader);
         }
@@ -169,5 +172,5 @@ public class Avatar extends GameObject {
             if (getVelocity().x() == 0)
                 this.renderer().setRenderable(modelAnimation);
         }
-    }
+    } // end of method update
 } // end of class Avatar

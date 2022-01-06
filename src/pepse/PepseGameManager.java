@@ -8,6 +8,7 @@ import danogl.gui.rendering.Camera;
 import danogl.util.Vector2;
 import pepse.world.Avatar;
 import pepse.world.Block;
+import pepse.world.NPC.Skeleton;
 import pepse.world.Sky;
 import pepse.world.Terrain;
 import pepse.world.daynight.Moon;
@@ -50,10 +51,11 @@ public class PepseGameManager extends GameManager {
     private static final int NIGHT_LAYER = Layer.FOREGROUND;
 
     //tags
-    private static final String trunkTag = "trunk";
-    private static final String leafTag = "leaf";
-    private static final String groundTag = "ground";
-    private static final String lowerGroundTag = "lower ground";
+    private static final String TRUNK_TAG = "trunk";
+    private static final String LEAF_TAG = "leaf";
+    private static final String GROUND_TAG = "ground";
+    private static final String LOWER_GROUND_TAG = "lower ground";
+    private static final String ENEMY_TAG = "enemy";
 
     // game objects
     private Tree tree;
@@ -94,7 +96,7 @@ public class PepseGameManager extends GameManager {
         // create terrain
         this.terrain = new Terrain(this.gameObjects(), GROUND_LAYER, windowDimensions, seed);
         // create trees
-        this.tree = new Tree(this.gameObjects(), terrain, seed, TRUNK_LAYER, LEAVES_LAYER,  trunkTag,  leafTag,  groundTag);
+        this.tree = new Tree(this.gameObjects(), terrain, seed, TRUNK_LAYER, LEAVES_LAYER, TRUNK_TAG, LEAF_TAG, GROUND_TAG);
         // create night
         this.night = Night.create(gameObjects(), NIGHT_LAYER, windowDimensions, NIGHT_CYCLE);
         // create sun
@@ -120,6 +122,7 @@ public class PepseGameManager extends GameManager {
         gameObjects().layers().shouldLayersCollide(PROJECTILES_LAYER, TRUNK_LAYER, true);
         gameObjects().layers().shouldLayersCollide(PROJECTILES_LAYER, LEAVES_LAYER, true);
         gameObjects().layers().shouldLayersCollide(PROJECTILES_LAYER, Layer.STATIC_OBJECTS, true);
+        gameObjects().layers().shouldLayersCollide(PROJECTILES_LAYER, AVATAR_LAYER, true);
     }// overrides initializeGame
 
     /**
@@ -147,21 +150,22 @@ public class PepseGameManager extends GameManager {
         }
     } //end of update
 
-    private void buildWorld(int start, int end){
-        this.terrain.createInRange(start, end);
-        this.tree.createInRange(start, end);
-    } // end of build world
-
-    // builds initial world
     private void initialWorld() {
         float rightXCoordinate = camera.screenToWorldCoords(windowDimensions).x();
         float leftXCoordinate = camera.screenToWorldCoords(windowDimensions).x() - windowDimensions.x();
         this.leftPointer = (int) (Math.floor(leftXCoordinate / Block.SIZE) * Block.SIZE) - extendBy;
         this.rightPointer = (int) (Math.floor(rightXCoordinate / Block.SIZE) * Block.SIZE) + extendBy;
         buildWorld(this.leftPointer, this.rightPointer);
-    } //build initial world
+    } // end of initial world
 
-    // extends the world to the right
+    private void buildWorld(int start, int end){
+        this.terrain.createInRange(start, end);
+        this.tree.createInRange(start, end);
+        float x = random.nextInt(Math.min(start, end), Math.max(start, end));
+        Skeleton.create(x, avatar, gameObjects(), imageReader, soundReader, windowDimensions, terrain, AVATAR_LAYER,
+                ENEMY_TAG);
+    } // end of build world
+
     private void extendRight(float start, float end){
         int normalizeStart = (int) (Math.floor(start / Block.SIZE) * Block.SIZE); // normalize start position
         int normalizeEnd = (int) (Math.floor(end / Block.SIZE) * Block.SIZE); // normalize end position
@@ -194,17 +198,19 @@ public class PepseGameManager extends GameManager {
     // removes the objects
     private void removeObjects(GameObject obj){
         // remove ground
-        if (obj.getTag() .equals(groundTag))
+        if (obj.getTag() .equals(GROUND_TAG))
             gameObjects().removeGameObject(obj, GROUND_LAYER);
         // remove tree trunk
-        else if (obj.getTag().equals(trunkTag))
+        else if (obj.getTag().equals(TRUNK_TAG))
              gameObjects().removeGameObject(obj, TRUNK_LAYER);
         // remove leaves
-        else if (obj.getTag().equals(leafTag))
+        else if (obj.getTag().equals(LEAF_TAG))
              gameObjects().removeGameObject(obj, LEAVES_LAYER);
         // remove bottom bricks
-        else if (obj.getTag().equals(lowerGroundTag))
+        else if (obj.getTag().equals(LOWER_GROUND_TAG))
             gameObjects().removeGameObject(obj, LOWER_GROUND_LAYER);
+        else if (obj.getTag().equals(ENEMY_TAG))
+            gameObjects().removeGameObject(obj, AVATAR_LAYER);
     } // end of method remove objects
 
     /**

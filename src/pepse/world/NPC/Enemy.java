@@ -4,7 +4,6 @@ import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
 import danogl.collisions.Layer;
 import danogl.gui.ImageReader;
-import danogl.gui.rendering.AnimationRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import pepse.world.Avatar;
@@ -39,7 +38,7 @@ public abstract class Enemy extends GameObject{
         this.avatar = avatar;
         this.gameObjects = gameObjects;
         this.maxHP = hp;
-        this.hearts = new GameObject[currHP];
+        this.hearts = new GameObject[maxHP];
 
     }
 
@@ -61,19 +60,6 @@ public abstract class Enemy extends GameObject{
             gameObjects.addGameObject(hearts[i], HEARTS_LAYER);
         }
         currHP = maxHP;
-    }
-
-    /**
-     * adds HP to the enemy, at maximum can be initial "hp" that was given in c'tor.
-     * @param imageReader to read the hearts images
-     * @param amount amound of hearts to add
-     */
-    public void addHP(ImageReader imageReader, int amount) {
-        // add hearts from curr HP to currHP + amount, or to maxHP.
-        for (int i = currHP; i < currHP + (amount) && i < maxHP; i++)
-            gameObjects.addGameObject(hearts[i], HEARTS_LAYER);
-        // update currHP
-        currHP = Math.min(currHP + amount, maxHP);
     }
 
     /**

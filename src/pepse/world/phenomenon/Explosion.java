@@ -9,20 +9,24 @@ import danogl.gui.rendering.AnimationRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import pepse.world.Avatar;
+import pepse.world.NPC.Enemy;
 
 /**
  * Explosion is a phenomenon in the world which destroys everything it touches. Disappears after the explosion
  * is done.
  */
 public class Explosion extends GameObject{
+    // constants
+    private static final int EXPLOSION_TIME = 20; // in update frames
+    public static final String EXPLOSION_TAG = "explosion";
+    private static final int EXPLOSIONS_DAMAGE = 3;
+    // assets
     private static final String[] ANIMATION_PATH = {"src/assets/explosion1.png", "src/assets/explosion2.png",
             "src/assets/explosion3.png", "src/assets/explosion4.png", "src/assets/explosion5.png",
             "src/assets/explosion6.png", "src/assets/explosion7.png"};
-    private static final String SOUND_PATH = "src/assets/explosion.wav";
     private static final double TIME_BETWEEN_CLIPS = 0.1;
-    private static final int EXPLOSION_TIME = 20; // in update frames
-    public static final String EXPLOSION_TAG = "explosion";
-
+    private static final String SOUND_PATH = "src/assets/explosion.wav";
+    // fields
     private final GameObjectCollection gameObjects;
     private final int layer;
     private int count = 0;
@@ -71,7 +75,6 @@ public class Explosion extends GameObject{
      */
     @Override
     public boolean shouldCollideWith(GameObject other) {
-
         return (!other.getTag().equals(Avatar.AVATAR_TAG) && !other.getTag().equals(EXPLOSION_TAG));
     }
 
@@ -83,10 +86,14 @@ public class Explosion extends GameObject{
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        // remove everything that touches the explosion, in 10 layer radius.
-        for (int i = 0; i <= 10; i++) {
-            if (gameObjects.removeGameObject(other, layer + i)) {
-                break;
+        // if object is an enemy, hit it with damage. else, remove object from game.
+        if (other instanceof Enemy enemy) {
+            enemy.damageEnemy(EXPLOSIONS_DAMAGE);
+        } else {
+            for (int i = 0; i <= 10; i++) {
+                if (gameObjects.removeGameObject(other, layer + i)) {
+                    break;
+                }
             }
         }
     }
