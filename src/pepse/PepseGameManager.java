@@ -30,6 +30,7 @@ public class PepseGameManager extends GameManager {
     private static final String GAME_OVER_MSG = "Game Over! Do you want to play again?";
     private static final int SEED = 123456;
     // constants
+    private static final int MAX_ENEMIES = 2;
     private static final int NIGHT_CYCLE = 30;
     private static final int CHANCE_FOR_RAIN = 3500;
     private static final int MIN_RAIN_DURATION = 400;
@@ -80,10 +81,12 @@ public class PepseGameManager extends GameManager {
     private Vector2 windowDimensions;
     // static fields
     public static Counter score;
+    public static Counter numOfEnemiesAlive;
 
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader, UserInputListener inputListener, WindowController windowController) {
         score = new Counter();
+        numOfEnemiesAlive = new Counter();
         //
         this.random = new Random(SEED);
         this.windowController = windowController;
@@ -170,13 +173,17 @@ public class PepseGameManager extends GameManager {
         float leftXCoordinate = camera.screenToWorldCoords(windowDimensions).x() - windowDimensions.x();
         this.leftPointer = (int) (Math.floor(leftXCoordinate / Block.SIZE) * Block.SIZE) - extendBy;
         this.rightPointer = (int) (Math.floor(rightXCoordinate / Block.SIZE) * Block.SIZE) + extendBy;
-        buildWorld(this.leftPointer, this.rightPointer);
+        this.terrain.createInRange(leftPointer, rightPointer);
+        this.tree.createInRange(leftPointer, rightPointer);
     } // end of initial world
 
     private void buildWorld(int start, int end){
         this.terrain.createInRange(start, end);
         this.tree.createInRange(start, end);
-        npcFactory.createEnemy(random.nextInt(Math.min(start, end), Math.max(start, end)));
+        if (numOfEnemiesAlive.value() <= MAX_ENEMIES) {
+            npcFactory.createEnemy(random.nextInt(Math.min(start, end), Math.max(start, end)));
+            numOfEnemiesAlive.increment();
+        }
     } // end of build world
 
     private void extendRight(float start, float end){
@@ -222,8 +229,13 @@ public class PepseGameManager extends GameManager {
         // remove bottom bricks
         else if (obj.getTag().equals(LOWER_GROUND_TAG))
             gameObjects().removeGameObject(obj, LOWER_GROUND_LAYER);
-        else if (obj.getTag().equals(ENEMY_TAG))
-            gameObjects().removeGameObject(obj, AVATAR_LAYER);
+        else if (obj.getTag().equals(ENEMY_TAG)) {
+            if (gameObjects().removeGameObject(obj, AVATAR_LAYER))
+                numOfEnemiesAlive.decrement();
+        // delete UI elements
+        else
+            gameObjects().removeGameObject(obj, Layer.UI);
+        }
     } // end of method remove objects
 
     public void endGame() {

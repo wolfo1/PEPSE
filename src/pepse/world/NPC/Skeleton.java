@@ -83,6 +83,11 @@ public class Skeleton extends Enemy {
         // check if skeleton is dead
         if (hpBar.getCurrHP() == 0)
             die();
+        // check if skeleton crossed the terrain
+        float groundHeight = terrain.groundHeightAt(this.getCenter().x()) + 10;
+        if (getTopLeftCorner().y() - getDimensions().y() > groundHeight) {
+            this.setTopLeftCorner(new Vector2(getTopLeftCorner().x(), (float) (Math.floor(groundHeight) - getDimensions().y())));
+        }
         Vector2 avatarLocation = getAvatarLocation();
         if (!seenAvatar) {
             // if the distance from the avatar to skeleton is smaller than the edge of the screen, start walk toward him.

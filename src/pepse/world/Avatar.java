@@ -18,6 +18,7 @@ import pepse.world.NPC.Enemy;
 import pepse.world.weapons.Fireball;
 import pepse.world.weapons.Projectile;
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.awt.event.KeyEvent;
 
 public class Avatar extends GameObject {
@@ -42,6 +43,7 @@ public class Avatar extends GameObject {
     private static final String GRAVE_PATH = "src/assets/grave.png";
     private static final Vector2 GRAVE_DIMENSIONS = new Vector2(130, 120);
     private static final float DEATH_DURATION = 5;
+    private static final float MAX_SPEED = 300;
     private final Renderable walkAnimation;
     private final Renderable modelAnimation;
     private final Renderable jumpAnimation;
@@ -136,11 +138,8 @@ public class Avatar extends GameObject {
         super.update(deltaTime);
         if (hpBar.getCurrHP() == 0)
             die();
-        // check if character crossed the terrain
-//        float groundHeight = terrain.groundHeightAt(this.getCenter().x());
-//        if (getCenter().y() - (getDimensions().y() / 2) < groundHeight + 20) {
-//            this.setTopLeftCorner(new Vector2(getTopLeftCorner().x(), (float) (Math.floor(groundHeight) - getDimensions().y())));
-//        }
+        if (getVelocity().y() > MAX_SPEED)
+            setVelocity(new Vector2(getVelocity().x(), MAX_SPEED));
         float xVel = 0;
         // walk left
         if(inputListener.isKeyPressed(KeyEvent.VK_LEFT)) {
@@ -183,7 +182,8 @@ public class Avatar extends GameObject {
                 jumpSound.play();
         }
         // fire a fireball from the character
-        if (inputListener.isKeyPressed(KeyEvent.VK_G)) {
+        if (inputListener.isKeyPressed(KeyEvent.VK_G) && energy >= 10) {
+            energy -= 10;
             Vector2 startingLocation = this.getCenter();
             if (renderer().isFlippedHorizontally())
                 startingLocation = startingLocation.add(PROJECTILE_EXIT_LOCATION);

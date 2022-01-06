@@ -43,7 +43,7 @@ public class Terrain {
     } // end of constructor
 
     /**
-     * This method return the ground height at a given location.
+     * creates terrain in given range
      * @param minX The lower bound of the given range (will be rounded to a multiple of Block.SIZE).
      * @param maxX The upper bound of the given range (will be rounded to a multiple of Block.SIZE).
      */

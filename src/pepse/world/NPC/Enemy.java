@@ -52,5 +52,6 @@ public abstract class Enemy extends GameObject{
     public void die() {
         gameObjects.removeGameObject(hpBar, Layer.UI);
         PepseGameManager.score.increment();
+        PepseGameManager.numOfEnemiesAlive.decrement();
     }
 }
