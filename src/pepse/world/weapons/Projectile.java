@@ -14,8 +14,8 @@ import java.util.function.Consumer;
  * when the projectile hits something.
  */
 public abstract class Projectile extends GameObject {
-    private final GameObjectCollection gameObjects;
-    // the hit effect that happens when the projectile hits something
+    protected final GameObjectCollection gameObjects;
+    // the hit effect that happens when the projectile hits something.
     private Consumer<Vector2> hitEffect = null;
 
     /**
@@ -41,22 +41,16 @@ public abstract class Projectile extends GameObject {
     }
 
     /**
-     * get GameObjectCollection
-     * @return GameObjectCollection of the game.
-     */
-    public GameObjectCollection getGameObjects() { return this.gameObjects; }
-
-    /**
      * get a Consumer that takes a Vector2 and does an effect.
      * @param hitEffect Consumer<Vector2>
      */
-    public void setHitEffect(Consumer<Vector2> hitEffect) { this.hitEffect = hitEffect; }
+    protected void setHitEffect(Consumer<Vector2> hitEffect) { this.hitEffect = hitEffect; }
 
     /**
      * run the hit effect if it's not null according to given location vector.
      * @param location location of the hit
      */
-    public void runHitEffect(Vector2 location) {
+    protected void runHitEffect(Vector2 location) {
         if (this.hitEffect != null)
             this.hitEffect.accept(location);
     }

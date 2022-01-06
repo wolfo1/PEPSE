@@ -5,28 +5,26 @@ import danogl.collisions.Layer;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
-import pepse.PerlinNoise;
 import pepse.util.ColorSupplier;
 
 import java.awt.*;
 
 public class Terrain {
-    // fields
-    private final GameObjectCollection gameObjects;
-    private final int groundLayer;
-    private static float groundHeightAtX0;
     // colour
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
     //constants
-    private static final float DEPTH = 7 ;
     private static final float TWO_THIRDS = 2/3f;
     private static final int TWO = 2;
     private static final int TERRAIN_DEPTH = 20;
     private static final int LOWER_GROUND_LAYER = Layer.DEFAULT - 10;
-    private final PerlinNoise perlinNoise;
     // tags
     private static final String groundTag =  "ground";
     private static final String lowerGroundTag = "lower ground";
+    // fields
+    private final GameObjectCollection gameObjects;
+    private final int groundLayer;
+    private static float groundHeightAtX0;
+    private final PerlinNoise perlinNoise;
 
     /**
      * Constructs a terrain
@@ -37,7 +35,7 @@ public class Terrain {
     public Terrain(GameObjectCollection gameObjects, int groundLayer, Vector2 windowDimensions, int seed){
         this.gameObjects = gameObjects;
         this.groundLayer = groundLayer;
-        this.groundHeightAtX0 = windowDimensions.y() * TWO_THIRDS;
+        Terrain.groundHeightAtX0 = windowDimensions.y() * TWO_THIRDS;
         perlinNoise = new PerlinNoise();
         perlinNoise.setSeed(seed);
     } // end of constructor
@@ -77,7 +75,7 @@ public class Terrain {
     public float groundHeightAt(float x){
         float perlin = (int)(((float)( 3 * perlinNoise.noise(x) * Block.SIZE) )/Block.SIZE) * Block.SIZE;
         float temp = (float)((Math.sin(x/5) * Block.SIZE)/Block.SIZE) * Block.SIZE;
-       return (int)((this.groundHeightAtX0 + perlin + temp)/Block.SIZE) * Block.SIZE;
+       return (int)((Terrain.groundHeightAtX0 + perlin + temp)/Block.SIZE) * Block.SIZE;
     } // end of method groundHeightAt
 
 } // end of class Terrain

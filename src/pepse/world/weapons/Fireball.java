@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 /**
  * Fireball is a type of weapon which fires a blast of fire from the hands of the character.
- * when the fireball hits something, it creates an explosion (see Phenomenon.explosion).
+ * when the fireball hits something, it creates an explosion (see Phenomenon explosion).
  */
 public class Fireball extends Projectile{
     // animation and sound related
@@ -25,6 +25,7 @@ public class Fireball extends Projectile{
     private static final float ACCELERATION_X = 300;
     private static final int MAX_TRAVEL_DISTANCE = 1000;
     private static final int EXPLOSION_RADIUS = 150;
+
     // only 1 fireball can be present at each moment.
     private static boolean isInstantiated = false;
 
