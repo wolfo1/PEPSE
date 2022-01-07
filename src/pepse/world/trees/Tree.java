@@ -29,20 +29,23 @@ public class Tree {
     private final Color LEAF_COLOUR = new Color(50,200,30);
     private final Color TRUNK_COLOUR =new Color(100,50,20);
     //constants
-    private static final int MINIMAL_DISTANCE_BETWEEN_TREES = 300 ;
-    private static final float FADEOUT_TIME = 10;
-    private static final int MAX_HEIGHT = 10;
-    private static final int MIN_HEIGHT = 5;
+    private final int MINIMAL_DISTANCE_BETWEEN_TREES = 300 ;
+    private final float FADEOUT_TIME = 10;
+    private final int MAX_HEIGHT = 10;
+    private final int MIN_HEIGHT = 5;
     private static final float ODDS = 0.7f;
     private final int COLOUR_DELTA = 10;
+    private final int LEAF_COLOUR_DELTA = 20;
     private final int LEAF_ANIMATION_WAIT_TIME = 19;
     private final int LEAF_FALL_WAIT_TIME = 60;
     private final int LEAF_FALL_DELAY = 7;
-    private final int TRANSITION_DELAY = 7;
-    private static final int ONE = 1;
-    private static final int TWO = 2;
-    private static final int THREE = 3;
-    private static final int FIVE = 5;
+    private final int TRANSITION_RANDOM_DELAY = 7;
+    private final int OPAQUENESS = 1;
+    private final int HALF = 2;
+    private final int DELAY = 1;
+    private final int FALL_DELAY = 2;
+    private final int TRANSITION_DELAY = 3;
+    private final int LEAF_FALL_RANDOM = 5;
 
     /**
      * Responsible for the creation and management of trees.
@@ -94,8 +97,8 @@ public class Tree {
         int groundHeight = heightAt(location); // the ground height at a certain location
         createTrunk(groundHeight, location, rootHeight); // creates the trunk
         int sizeTopTree = Block.SIZE*(rootHeight*2/3);
-        int col = location-sizeTopTree/2;
-        int row = rootHeight*Block.SIZE-sizeTopTree/2;
+        int col = location-sizeTopTree/HALF;
+        int row = rootHeight*Block.SIZE-sizeTopTree/HALF;
         for (int i = col; i <= (col + sizeTopTree); i+=Block.SIZE) {
             for (int j = row; j <= row + sizeTopTree; j+=Block.SIZE) {
                 Vector2 locationOrigLeaf = new Vector2(i, groundHeight - j);
@@ -122,17 +125,17 @@ public class Tree {
     // Creates a leaf
     private Leaf createLeaf(Vector2 location) {
         return new Leaf(location, new Vector2(Block.SIZE, Block.SIZE),
-                new RectangleRenderable(pepse.util.ColorSupplier.approximateColor(LEAF_COLOUR, 2*COLOUR_DELTA))
+                new RectangleRenderable(pepse.util.ColorSupplier.approximateColor(LEAF_COLOUR, LEAF_COLOUR_DELTA))
                 ,this.leafTag, this.groundTag);
     } // end of private method create leaf
 
     // Animation of the leaf
     private void leafAnimation(Leaf leaf) {
         // schedule a delay for leaf angle
-        new ScheduledTask(leaf, rand.nextInt(LEAF_ANIMATION_WAIT_TIME) + ONE, true,
+        new ScheduledTask(leaf, rand.nextInt(LEAF_ANIMATION_WAIT_TIME) + DELAY, true,
                 () -> changeAngleTransition(leaf));
         // schedule a delay for leaf width
-        new ScheduledTask(leaf, rand.nextInt(LEAF_ANIMATION_WAIT_TIME) + ONE, true,
+        new ScheduledTask(leaf, rand.nextInt(LEAF_ANIMATION_WAIT_TIME) + DELAY, true,
                 () -> changeDimensionsTransition(leaf));
     } // end of private method
 
@@ -141,7 +144,7 @@ public class Tree {
         new Transition<>(
                 leaf,
                 (size) -> leaf.setDimensions(new Vector2(Block.SIZE + size, Block.SIZE + size)),
-                -1f, 4f, Transition.CUBIC_INTERPOLATOR_FLOAT, rand.nextInt(TRANSITION_DELAY) + THREE,
+                -1f, 4f, Transition.CUBIC_INTERPOLATOR_FLOAT, rand.nextInt(TRANSITION_RANDOM_DELAY) + TRANSITION_DELAY,
                 Transition.TransitionType.TRANSITION_LOOP, null);
     } // end of private method
 
@@ -149,21 +152,21 @@ public class Tree {
     private void changeAngleTransition(Leaf leaf) {
         new Transition<>(leaf,
                 (angle) -> leaf.renderer().setRenderableAngle(angle), //moves the leaves in the air
-                0f, 5f, Transition.CUBIC_INTERPOLATOR_FLOAT, rand.nextInt(TRANSITION_DELAY) + THREE,
+                0f, 5f, Transition.CUBIC_INTERPOLATOR_FLOAT, rand.nextInt(TRANSITION_RANDOM_DELAY) + TRANSITION_DELAY,
                 Transition.TransitionType.TRANSITION_LOOP, null
         );
     } //end of private method
 
     // In charge of the falling of the leaf
     private void createLeafFall(Leaf leaf, Vector2 location) {
-        leaf.renderer().setOpaqueness(ONE);
+        leaf.renderer().setOpaqueness(OPAQUENESS);
         leaf.setTopLeftCorner(location);
         new ScheduledTask(
                 leaf, rand.nextInt(LEAF_FALL_WAIT_TIME) + LEAF_FALL_DELAY, false,
                 () -> {
-                    leaf.leafFallTransition(leaf, rand.nextInt(FIVE) + TWO);   //  transition of vertical movement
+                    leaf.leafFallTransition(leaf, rand.nextInt(LEAF_FALL_RANDOM) + FALL_DELAY);   //  transition of vertical movement
                     leaf.renderer().fadeOut(FADEOUT_TIME, () -> { // add fadeout time
-                        leafAfterFalling(leaf, location, rand.nextInt(FIVE));}); // end of fadeout
+                        leafAfterFalling(leaf, location, rand.nextInt(LEAF_FALL_RANDOM));}); // end of fadeout
                 }); // end of lambda
     } // end of private method
 

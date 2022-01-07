@@ -11,11 +11,13 @@ public class Leaf extends GameObject {
     private final String groundTag;
     // constants
     private boolean transitionExist = false;
-    private static final int ZERO = 0;
-    private static final int TWO = 2;
-    private static final int SEVEN = 7;
-    private int xVelocity = 20;
-    private int yVelocity = 25;
+    private final int xNewVelocity = 0;
+    private final int yNewVelocity = 0;
+    private final int MINIAML_VALUE = 2;
+    private final int MAXIMAL_VALUE = 7;
+    private final int NEGATIVE = -1;
+    private final int xVelocity = 20;
+    private final int yVelocity = 25;
     private Transition<Float> horizontalTransition;
 
     /**
@@ -42,10 +44,10 @@ public class Leaf extends GameObject {
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
         if (other.getTag().equals(groundTag)){
-            this.transform().setVelocity(ZERO,ZERO);
+            this.transform().setVelocity(xNewVelocity,yNewVelocity);
             removeComponent(this.horizontalTransition);
-        }
-    }
+        } // end of if
+    } // end of onCollisionEnter override method
 
     /**
      * Creates a Transition for vertical movement.
@@ -57,10 +59,10 @@ public class Leaf extends GameObject {
             this.horizontalTransition = new Transition<>(
                     leaf,
                     (val) -> {
-                        if (val < TWO)
+                        if (val < MINIAML_VALUE)
                             leaf.transform().setVelocity(xVelocity, yVelocity);
-                        if (val > SEVEN)
-                            leaf.transform().setVelocity(-xVelocity, yVelocity);
+                        if (val > MAXIMAL_VALUE)
+                            leaf.transform().setVelocity(NEGATIVE* xVelocity, yVelocity);
                     },
                     0f, 10f, Transition.CUBIC_INTERPOLATOR_FLOAT, transitionTime,
                     Transition.TransitionType.TRANSITION_LOOP, null);
