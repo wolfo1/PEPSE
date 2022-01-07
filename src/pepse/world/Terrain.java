@@ -1,7 +1,6 @@
 package pepse.world;
 
 import danogl.collisions.GameObjectCollection;
-import danogl.collisions.Layer;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
@@ -14,8 +13,11 @@ public class Terrain {
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
     //constants
     private static final float TWO_THIRDS = 2/3f;
-    private static final int TWO = 2;
+    private static final int CREATE_IN_RANGE_SIZE = 2;
     private static final int TERRAIN_DEPTH = 20;
+    private static final int ANGLE = 5;
+    private static final int PERLIN_NOISE = 3;
+    private static final int PERLIN_NOISE_DEPTH = 2;
     // subtract from groundLayer
     private static final int LOWER_GROUND_LAYER = -10;
     // tags
@@ -57,7 +59,7 @@ public class Terrain {
             for (int j = 0; j < TERRAIN_DEPTH; j++) {
                 Renderable ground = new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
                 Block block = new Block(new Vector2(i, groundHeightAt(i) + j*Block.SIZE), ground);
-                if (j < TWO) {
+                if (j < CREATE_IN_RANGE_SIZE) {
                     gameObjects.addGameObject(block, groundLayer); // adds to gameObjects
                     block.setTag(groundTag);  // sets tag
                 } // end of if
@@ -75,8 +77,8 @@ public class Terrain {
      * @return The ground height at the given location
      */
     public float groundHeightAt(float x){
-        float perlin = 2 * (int)(((float)(3 *  perlinNoise.noise(x) * Block.SIZE) )/Block.SIZE) * Block.SIZE;
-        float similarToSin = (float)((Math.sin(x/5) * Block.SIZE)/Block.SIZE) * Block.SIZE;
+        float perlin = PERLIN_NOISE_DEPTH * (int)(((float)(PERLIN_NOISE *  perlinNoise.noise(x) * Block.SIZE) )/Block.SIZE) * Block.SIZE;
+        float similarToSin = (float)((Math.sin(x/ANGLE) * Block.SIZE)/Block.SIZE) * Block.SIZE;
         return (int)((this.groundHeightAtX0 + perlin + similarToSin)/Block.SIZE) * Block.SIZE;
     } // end of method groundHeightAt
 
