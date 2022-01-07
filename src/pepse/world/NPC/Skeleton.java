@@ -57,6 +57,19 @@ public class Skeleton extends Enemy {
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
     }
 
+    /**
+     * Create skeleton at xLocation, adds it to the game.
+     * @param xLocation location to place skeleton at
+     * @param avatar avatar to follow
+     * @param gameObjects Collection
+     * @param imageReader ImageReader
+     * @param soundReader SoundReader
+     * @param windowDimensions the dimensions of the window
+     * @param terrain terrain to calculate terrain height
+     * @param layer layer to place skeleton at
+     * @param tag enemy tag
+     * @return the skeleton
+     */
     public static Enemy create(float xLocation, Avatar avatar, GameObjectCollection gameObjects,
                               ImageReader imageReader, SoundReader soundReader, Vector2 windowDimensions,
                               Terrain terrain, int layer, String tag) {
@@ -135,6 +148,7 @@ public class Skeleton extends Enemy {
     public void die() {
         super.die();
         gameObjects.removeGameObject(this, layer);
+        // create skeleton remains
         GameObject bones = new GameObject(this.getCenter(), BONES_DIMENSIONS, deadRender);
         gameObjects.addGameObject(bones, Layer.STATIC_OBJECTS);
         bones.transform().setAccelerationY(GRAVITY);
@@ -144,7 +158,7 @@ public class Skeleton extends Enemy {
                 bones,
                 BONES_DURATION,
                 false,
-                () -> {gameObjects.removeGameObject(bones, Layer.STATIC_OBJECTS);}
+                () -> gameObjects.removeGameObject(bones, Layer.STATIC_OBJECTS)
         );
     }
 }

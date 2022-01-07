@@ -9,6 +9,7 @@ import danogl.util.Vector2;
 import java.awt.*;
 
 public class SunHalo {
+    // constants
     private static final String HALO_TAG = "Halo";
     private static final Vector2 HALO_DIMENSIONS = new Vector2(300, 300);
     // there could be several halos for different objects, so a running index to differentiate them

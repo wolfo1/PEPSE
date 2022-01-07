@@ -19,7 +19,7 @@ public class Explosion extends GameObject{
     // constants
     private static final int EXPLOSION_TIME = 20; // in update frames
     public static final String EXPLOSION_TAG = "explosion";
-    private static final int EXPLOSIONS_DAMAGE = 4;
+    private static final int EXPLOSIONS_DAMAGE = 3;
     // assets
     private static final String[] ANIMATION_PATH = {"src/assets/explosion1.png", "src/assets/explosion2.png",
             "src/assets/explosion3.png", "src/assets/explosion4.png", "src/assets/explosion5.png",
@@ -88,7 +88,8 @@ public class Explosion extends GameObject{
         super.onCollisionEnter(other, collision);
         // if object is an enemy, hit it with damage. else, remove object from game.
         if (other instanceof Enemy) {
-            Enemy enemy = (Enemy) other;
+            Enemy enemy;
+            enemy = (Enemy) other;
             enemy.damageEnemy(EXPLOSIONS_DAMAGE);
         } else {
             for (int i = 0; i <= 10; i++) {

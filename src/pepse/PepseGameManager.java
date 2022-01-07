@@ -7,7 +7,7 @@ import danogl.gui.*;
 import danogl.gui.rendering.Camera;
 import danogl.util.Counter;
 import danogl.util.Vector2;
-import pepse.ui.Score;
+import pepse.ui.OnScreenCounter;
 import pepse.util.ReadScores;
 import pepse.world.Avatar;
 import pepse.world.Block;
@@ -41,12 +41,19 @@ public class PepseGameManager extends GameManager {
     private static final int SEED = 123456;
     private static final int MAX_ENEMIES = 2;
     private static final int NIGHT_CYCLE = 30;
-    private static final int CHANCE_FOR_RAIN = 3500;
+    private static final int CHANCE_FOR_RAIN = 1200;
     private static final int MIN_RAIN_DURATION = 400;
     private static final int MAX_RAIN_DUARTION = 1600;
     private static final float MIN_GAP = 50;
+    private static final int EXTEND_WORLD_BY = 10 * Block.SIZE;
     private static final Color SUN_HALO_COLOR = new Color(255, 0, 0, 20);
     private static final Color MOON_HALO_COLOR = new Color(255, 255, 255, 80);
+    private static final Vector2 SCORE_UI_DIM = new Vector2(20, 20);
+    private static final int SCORE_UI_Y_OFFSET = 100;
+    private static final float SCORE_UI_X_OFFSET = 50;
+    private static final String SCORE_UI_MSG = " Enemies Killed";
+    private static final String ENERGY_UI_MSG = " Energy";
+    private static final int ENERGY_UI_Y_OFFSET = 50;
     //layers
     private static final int SKY_LAYER = Layer.BACKGROUND;
     private static final int SUN_LAYER = Layer.BACKGROUND + 1;
@@ -69,62 +76,54 @@ public class PepseGameManager extends GameManager {
     private static final String ENEMY_TAG = "enemy";
     // game objects
     private Tree tree;
-    private GameObject night;
-    private GameObject sun;
-    private GameObject sunHalo;
-    private GameObject moon;
-    private GameObject moonHalo;
     private Avatar avatar;
     private Camera camera;
+    private Terrain terrain;
     // infinite world
+    private Random random;
     private int leftPointer;
     private int rightPointer;
-    private static final int extendBy = 10 * Block.SIZE;
-    private Terrain terrain;
-    private Random random;
     private NPCFactory npcFactory;
     // fields
     private ImageReader imageReader;
     private SoundReader soundReader;
     private WindowController windowController;
     private Vector2 windowDimensions;
+    private Counter energy;
     // static fields
     public static Counter score;
     public static Counter numOfEnemiesAlive;
 
+    /**
+     * initializes the world. Creates and adds all basic objects.
+     * @param imageReader ImageReader
+     * @param soundReader SoundReader
+     * @param inputListener InputListener
+     * @param windowController WindowController
+     */
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader, UserInputListener inputListener, WindowController windowController) {
+        // initialize static counters.
         score = new Counter();
         numOfEnemiesAlive = new Counter();
-        //
+        // initialize seed
         this.random = new Random(SEED);
         this.windowController = windowController;
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
         this.windowDimensions = windowController.getWindowDimensions(); // gets window dimensions
         this.imageReader = imageReader;
         this.soundReader = soundReader;
-
+        // play soundtrack for the duration of the game.
         Sound sountrack = soundReader.readSound(SOUNDTRACK_PATH);
         sountrack.playLooped();
-        //create sky
-        Sky.create( gameObjects(), windowDimensions , SKY_LAYER);
+        // create celestial objects
+        createCelestials();
         // create terrain
         this.terrain = new Terrain(this.gameObjects(), GROUND_LAYER, windowDimensions, SEED);
         // create trees
         this.tree = new Tree(this.gameObjects(), terrain, SEED, TRUNK_LAYER, LEAVES_LAYER, TRUNK_TAG, LEAF_TAG, GROUND_TAG);
-        // create night
-        this.night = Night.create(gameObjects(), NIGHT_LAYER, windowDimensions, NIGHT_CYCLE);
-        // create sun
-        this.sun = Sun.create(gameObjects(), SUN_LAYER, windowDimensions, NIGHT_CYCLE);
-        // create halo
-        this.sunHalo = SunHalo.create(gameObjects(), SUN_HALO_LAYER, sun, SUN_HALO_COLOR);
-        // create moon
-        this.moon = Moon.create(gameObjects(), MOON_LAYER, windowDimensions, NIGHT_CYCLE, imageReader);
-        // create moon halo
-        this.moonHalo = SunHalo.create(gameObjects(), MOON_HALO_LAYER, moon, MOON_HALO_COLOR);
         // create avatar
         this.avatar = Avatar.create(gameObjects(), AVATAR_LAYER, windowDimensions.mult(0.5f), inputListener, imageReader);
-        this.avatar.setTerrain(terrain);
         this.avatar.setSounds(soundReader);
         this.avatar.setProjectileLayer(PROJECTILES_LAYER);
         // create camera
@@ -133,10 +132,16 @@ public class PepseGameManager extends GameManager {
         // create NPCFactory
         this.npcFactory = new NPCFactory(SEED, avatar, gameObjects(), imageReader, soundReader,
                 AVATAR_LAYER, windowController, terrain, ENEMY_TAG);
-        // create Score UI
-        Score score = new Score(PepseGameManager.score, new Vector2(50, this.windowDimensions.y() - 100),
-                new Vector2(20, 20), gameObjects());
-        gameObjects().addGameObject(score, Layer.UI);
+        // create Score UI & energy UI
+        OnScreenCounter scoreUI = new OnScreenCounter(PepseGameManager.score,
+                new Vector2(SCORE_UI_X_OFFSET, this.windowDimensions.y() - SCORE_UI_Y_OFFSET),
+                SCORE_UI_DIM, gameObjects(), SCORE_UI_MSG);
+        gameObjects().addGameObject(scoreUI, Layer.UI);
+        energy = new Counter((int) avatar.getEnergy());
+        OnScreenCounter energyUI = new OnScreenCounter(energy,
+                new Vector2(SCORE_UI_X_OFFSET, this.windowDimensions.y() - ENERGY_UI_Y_OFFSET),
+                SCORE_UI_DIM, gameObjects(), ENERGY_UI_MSG);
+        gameObjects().addGameObject(energyUI, Layer.UI);
         // create world
         initialWorld();
         // Leaf and block colliding, projectiles colliding with specific layers
@@ -145,9 +150,26 @@ public class PepseGameManager extends GameManager {
         gameObjects().layers().shouldLayersCollide(PROJECTILES_LAYER, LEAVES_LAYER, true);
         gameObjects().layers().shouldLayersCollide(PROJECTILES_LAYER, Layer.STATIC_OBJECTS, true);
         gameObjects().layers().shouldLayersCollide(PROJECTILES_LAYER, AVATAR_LAYER, true);
-        // enemy remains should collide with floor
         gameObjects().layers().shouldLayersCollide(Layer.STATIC_OBJECTS, Layer.STATIC_OBJECTS, true);
     }// overrides initializeGame
+
+    /**
+     * create Sky, Night, Sun, Moon and their Halos
+     */
+    private void createCelestials() {
+        //create sky
+        Sky.create( gameObjects(), windowDimensions , SKY_LAYER);
+        // create night
+        Night.create(gameObjects(), NIGHT_LAYER, windowDimensions, NIGHT_CYCLE);
+        // create sun
+        GameObject sun = Sun.create(gameObjects(), SUN_LAYER, windowDimensions, NIGHT_CYCLE);
+        // create halo
+        SunHalo.create(gameObjects(), SUN_HALO_LAYER, sun, SUN_HALO_COLOR);
+        // create moon
+        GameObject moon = Moon.create(gameObjects(), MOON_LAYER, windowDimensions, NIGHT_CYCLE, imageReader);
+        // create moon halo
+        SunHalo.create(gameObjects(), MOON_HALO_LAYER, moon, MOON_HALO_COLOR);
+    }
 
     /**
      * Updates the frame
@@ -158,16 +180,19 @@ public class PepseGameManager extends GameManager {
         super.update(deltaTime);
         if (avatar.isDead())
             endGame();
+        // update energy UI
+        energy.reset();
+        energy.increaseBy((int) avatar.getEnergy());
         //the most right x coordinate
         float rightXCoordinate = camera.screenToWorldCoords(windowDimensions).x();
         // the most left x coordinate
         float leftXCoordinate = camera.screenToWorldCoords(windowDimensions).x() - windowDimensions.x();
         // checks if I need to extend to right
         if (rightXCoordinate >= this.rightPointer)
-            extendRight(this.rightPointer, rightXCoordinate + extendBy);
+            extendRight(this.rightPointer, rightXCoordinate + EXTEND_WORLD_BY);
         // checks if I need to extend to left
         if (leftXCoordinate <= this.leftPointer)
-            extendLeft(leftXCoordinate + MIN_GAP, this.leftPointer - extendBy);
+            extendLeft(leftXCoordinate + MIN_GAP, this.leftPointer - EXTEND_WORLD_BY);
         // check for rain
         if (!Rain.isInstantiated && random.nextInt(CHANCE_FOR_RAIN) == 0) {
             // length can be between 400 and 1600 frames - approx. 10 to 40 seconds.
@@ -180,8 +205,8 @@ public class PepseGameManager extends GameManager {
         Rain.isInstantiated = false;
         float rightXCoordinate = camera.screenToWorldCoords(windowDimensions).x();
         float leftXCoordinate = camera.screenToWorldCoords(windowDimensions).x() - windowDimensions.x();
-        this.leftPointer = (int) (Math.floor(leftXCoordinate / Block.SIZE) * Block.SIZE) - extendBy;
-        this.rightPointer = (int) (Math.floor(rightXCoordinate / Block.SIZE) * Block.SIZE) + extendBy;
+        this.leftPointer = (int) (Math.floor(leftXCoordinate / Block.SIZE) * Block.SIZE) - EXTEND_WORLD_BY;
+        this.rightPointer = (int) (Math.floor(rightXCoordinate / Block.SIZE) * Block.SIZE) + EXTEND_WORLD_BY;
         this.terrain.createInRange(leftPointer, rightPointer);
         this.tree.createInRange(leftPointer, rightPointer);
     } // end of initial world

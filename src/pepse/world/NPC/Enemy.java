@@ -10,6 +10,10 @@ import pepse.PepseGameManager;
 import pepse.ui.HPBar;
 import pepse.world.Avatar;
 
+/**
+ * Enemy is an AI played character that wants to kill the avatar.
+ * An Enemy can be damaged and die (see methods).
+ */
 public abstract class Enemy extends GameObject{
     private final Avatar avatar;
     // can be used by child classes.
@@ -49,6 +53,9 @@ public abstract class Enemy extends GameObject{
         hpBar.removeHearts(damage);
     }
 
+    /**
+     * kills the enemy. keeps track of score (number of enemies killed), and how many enemies are alive.
+     */
     public void die() {
         gameObjects.removeGameObject(hpBar, Layer.UI);
         PepseGameManager.score.increment();

@@ -11,14 +11,13 @@ import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.rendering.AnimationRenderable;
 import danogl.gui.rendering.Renderable;
+import danogl.util.Counter;
 import danogl.util.Vector2;
-import pepse.PepseGameManager;
 import pepse.ui.HPBar;
 import pepse.world.NPC.Enemy;
 import pepse.world.weapons.Fireball;
 import pepse.world.weapons.Projectile;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.awt.event.KeyEvent;
 
 public class Avatar extends GameObject {
@@ -30,7 +29,13 @@ public class Avatar extends GameObject {
     private static final float VELOCITY_X = 400;
     private static final float VELOCITY_Y = -400;
     private static final float GRAVITY = 600;
+    private static final float MAX_SPEED = 300;
     private static final int AVATAR_HP = 3;
+    private static final float ENERGY_INCREMENT = 0.5f;
+    private static final float MAX_ENERGY = 100;
+    private static final float SPELL_ENERGY_COST = 10;
+    private static final Vector2 GRAVE_DIMENSIONS = new Vector2(130, 120);
+    private static final float DEATH_DURATION = 5;
     // assets
     private static final String JUMP_SOUND_PATH = "src/assets/jump.wav";
     private static final String FLIGHT_SOUND_PATH = "src/assets/fly.wav";
@@ -41,15 +46,12 @@ public class Avatar extends GameObject {
     private static final String JUMP_PATH = "src/assets/jump.png";
     private static final String FLY_PATH = "src/assets/fly.png";
     private static final String GRAVE_PATH = "src/assets/grave.png";
-    private static final Vector2 GRAVE_DIMENSIONS = new Vector2(130, 120);
-    private static final float DEATH_DURATION = 5;
-    private static final float MAX_SPEED = 300;
+
     private final Renderable walkAnimation;
     private final Renderable modelAnimation;
     private final Renderable jumpAnimation;
     private final Renderable flyAnimation;
     //fields
-    private Terrain terrain;
     private int projectileLayer;
     private final int selfLayer;
     private final ImageReader imageReader;
@@ -117,8 +119,11 @@ public class Avatar extends GameObject {
      */
     public void setProjectileLayer(int projectileLayer) { this.projectileLayer = projectileLayer; }
 
-    public void setTerrain(Terrain terrain) { this.terrain = terrain;}
-
+    /**
+     * Damages the avatar on certain collisions
+     * @param other object hitting
+     * @param collision collision information
+     */
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
@@ -127,6 +132,16 @@ public class Avatar extends GameObject {
             hpBar.removeHearts(1);
     }
 
+    /**
+     * returns the current energy of the avatar
+     * @return energy as int
+     */
+    public float getEnergy() { return energy; }
+
+    /**
+     * Checks if avatar is dead
+     * @return returns True if avatar is dead (0 HP), false otherwise.
+     */
     public boolean isDead() { return isDead; }
 
     /**
@@ -171,7 +186,7 @@ public class Avatar extends GameObject {
                 this.renderer().setRenderable(this.flyAnimation);
                 transform().setVelocityY(VELOCITY_Y);
                 // energy consumption
-                this.energy -= 0.5;
+                this.energy -= ENERGY_INCREMENT;
             }
         }
         // jump
@@ -183,7 +198,7 @@ public class Avatar extends GameObject {
         }
         // fire a fireball from the character
         if (inputListener.isKeyPressed(KeyEvent.VK_G) && energy >= 10) {
-            energy -= 10;
+            energy -= SPELL_ENERGY_COST;
             Vector2 startingLocation = this.getCenter();
             if (renderer().isFlippedHorizontally())
                 startingLocation = startingLocation.add(PROJECTILE_EXIT_LOCATION);
@@ -197,20 +212,26 @@ public class Avatar extends GameObject {
         }
         // regenerate energy while standing on something.
         if (getVelocity().y() == 0) {
-            this.energy += 0.5;
+            if (energy < MAX_ENERGY)
+                this.energy += ENERGY_INCREMENT;
             if (getVelocity().x() == 0)
                 this.renderer().setRenderable(modelAnimation);
         }
     } // end of method update
 
+    /**
+     * kills the avatar.
+     */
     private void die() {
+        // remove from game
         gameObjects.removeGameObject(this, selfLayer);
+        // creates a grave
         Renderable graveRender = imageReader.readImage(GRAVE_PATH, true);
         GameObject grave = new GameObject(this.getTopLeftCorner(), GRAVE_DIMENSIONS, graveRender);
         gameObjects.addGameObject(grave, Layer.STATIC_OBJECTS);
         grave.transform().setAccelerationY(GRAVITY);
         grave.physics().preventIntersectionsFromDirection(Vector2.ZERO);
-        // delete bones after BONES_DURATION seconds.
+        // tell the game avatar is dead after a few seconds for DRAMATIC EFFECT.
         new ScheduledTask(
                 grave,
                 DEATH_DURATION,

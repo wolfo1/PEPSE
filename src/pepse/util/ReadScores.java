@@ -5,7 +5,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public class ReadScores {
+/**
+ * class is in charge of reading Highscores from a formatted JSON file downloaded from server.
+ */
+public final class ReadScores {
     private static final String DELIMITER = "\"";
     private static final String REGEX = "[^\"a-zA-Z0-9]";
     private static final String PLAYER_ENTRY = "player";

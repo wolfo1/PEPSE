@@ -10,14 +10,13 @@ import danogl.util.Vector2;
 
 import java.awt.*;
 
-public class Score extends GameObject {
-    private static final String PHRASE = " Enemies killed";
-    // global counter, holds how many lives the player has
+public class OnScreenCounter extends GameObject {
+    // global counter to show on screen
     private final Counter score;
     // holds the number which is presented on the screen right now
     private int currScore;
     private final TextRenderable textRenderable;
-
+    private final String text;
     /**
      * Construct a new GameObject of type Paddle.
      * @param scoreCounter A real-time counter of how many lives player has left.
@@ -25,14 +24,15 @@ public class Score extends GameObject {
      * @param dimensions the dimensions of the text
      * @param gameObjectCollection used to add / remove widgets from the screen
      **/
-    public Score (Counter scoreCounter, Vector2 topLeftCorner, Vector2 dimensions,
-                               GameObjectCollection gameObjectCollection) {
+    public OnScreenCounter(Counter scoreCounter, Vector2 topLeftCorner, Vector2 dimensions,
+                           GameObjectCollection gameObjectCollection, String text) {
         super(topLeftCorner, dimensions, null);
         this.score = scoreCounter;
         this.currScore = scoreCounter.value();
+        this.text = text;
         // create a text box, bold letters in white text, add it to the screen.
         this.textRenderable = new TextRenderable(
-                this.score.value() + PHRASE,
+                this.score.value() + text,
                 Font.SANS_SERIF, false, true);
         this.textRenderable.setColor(Color.WHITE);
         GameObject counterText = new GameObject(topLeftCorner, dimensions, this.textRenderable);
@@ -49,7 +49,7 @@ public class Score extends GameObject {
         super.update(deltaTime);
         // if scoreCounter is different than currCOUNTER, update.
         if (this.score.value() != this.currScore) {
-            this.textRenderable.setString(this.score.value() + PHRASE);
+            this.textRenderable.setString(this.score.value() + text);
             this.currScore = this.score.value();
         }
     }

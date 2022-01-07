@@ -10,6 +10,7 @@ import danogl.util.Vector2;
 import java.awt.*;
 
 public class Sun {
+    // constants
     private static final String SUN_TAG = "sun";
     private static final Vector2 DIMENSIONS = new Vector2(250, 250);
     // the sun will revolve around the center of the screen + this offset

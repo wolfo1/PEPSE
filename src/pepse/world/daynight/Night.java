@@ -10,6 +10,7 @@ import danogl.util.Vector2;
 import java.awt.*;
 
 public class Night {
+    // constants
     private static final String NIGHT_TAG = "night";
     private static final float MIDNIGHT_OPACITY = 0.2f;
     /**

@@ -8,8 +8,10 @@ import danogl.gui.ImageReader;
 import danogl.util.Vector2;
 
 public class Moon {
+    // assets
     private static final String MOON_IMAGE_PATH = "src/assets/moon.png";
     private static final String MOON_TAG = "moon";
+    // constants
     private static final Vector2 DIMENSIONS = new Vector2(250, 250);
     // the sun will revolve around the center of the screen + this offset
     private static final Vector2 CENTER_OFFSET = new Vector2(0, 200);
