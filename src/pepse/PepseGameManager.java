@@ -215,7 +215,7 @@ public class PepseGameManager extends GameManager {
         this.terrain.createInRange(start, end);
         this.tree.createInRange(start, end);
         if (numOfEnemiesAlive.value() <= MAX_ENEMIES) {
-            npcFactory.createEnemy(random.nextInt(Math.min(start, end), Math.max(start, end)));
+            npcFactory.createEnemy(Math.min(start, end) + random.nextInt(Math.abs(start-end)));
             numOfEnemiesAlive.increment();
         }
     } // end of build world
