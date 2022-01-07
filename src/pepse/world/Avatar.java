@@ -130,6 +130,12 @@ public class Avatar extends GameObject {
         // if Avatar touches an enemy or gets hit by an enemy projectile, lower HP by 1.
         if (other instanceof Enemy || other instanceof Projectile)
             hpBar.removeHearts(1);
+        if (other.getTag().equals(trunkTag)){
+            if(other.getCenter().x() > this.getCenter().x()+ AVATAR_SIZE /2 )
+                this.transform().setCenterX(other.getCenter().x() - AVATAR_SIZE);
+            else if(other.getCenter().x() < this.getCenter().x() - AVATAR_SIZE /2 )
+                this.transform().setCenterX(other.getCenter().x() + AVATAR_SIZE);
+        }
     }
 
     /**
