@@ -19,7 +19,7 @@ public class Explosion extends GameObject{
     // constants
     private static final int EXPLOSION_TIME = 20; // in update frames
     public static final String EXPLOSION_TAG = "explosion";
-    private static final int EXPLOSIONS_DAMAGE = 1;
+    private static final int EXPLOSIONS_DAMAGE = 4;
     // assets
     private static final String[] ANIMATION_PATH = {"src/assets/explosion1.png", "src/assets/explosion2.png",
             "src/assets/explosion3.png", "src/assets/explosion4.png", "src/assets/explosion5.png",

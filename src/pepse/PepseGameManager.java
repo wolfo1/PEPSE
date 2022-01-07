@@ -8,6 +8,7 @@ import danogl.gui.rendering.Camera;
 import danogl.util.Counter;
 import danogl.util.Vector2;
 import pepse.ui.Score;
+import pepse.util.ReadScores;
 import pepse.world.Avatar;
 import pepse.world.Block;
 import pepse.world.NPC.NPCFactory;
@@ -20,16 +21,24 @@ import pepse.world.daynight.SunHalo;
 import pepse.world.phenomenon.Rain;
 import pepse.world.trees.Tree;
 
+import javax.swing.*;
 import java.awt.*;
+import java.net.*;
 import java.util.Random;
 
-
 public class PepseGameManager extends GameManager {
+    // URLs
+    private static final String BASE_URL = "https://gmscoreboard-2021-backend-nodejs-9hpr6.ondigitalocean.app/api/";
+    private static final String GET_SCORES_URL = "get-scores/?tagid=0c30c8f471e895e46a47e98e21c7087b&num=5";
+    private static final String SET_SCORE_URL_1 = "set-score/?tagid=0c30c8f471e895e46a47e98e21c7087b&player=";
+    private static final String SET_SCORE_URL_2 = "&score=";
     // assets
     private static final String SOUNDTRACK_PATH = "src/assets/soundtrack.wav";
     private static final String GAME_OVER_MSG = "Game Over! Do you want to play again?";
-    private static final int SEED = 123456;
+    private static final String ENTER_NAME_MSG = "Enter your name, without spaces or special characters: ";
+    private static final String SCORE_MSG = "PEPSE by Omri Wolf & Gabi Album\n         ====HIGHSCORES====\n";
     // constants
+    private static final int SEED = 123456;
     private static final int MAX_ENEMIES = 2;
     private static final int NIGHT_CYCLE = 30;
     private static final int CHANCE_FOR_RAIN = 3500;
@@ -239,6 +248,30 @@ public class PepseGameManager extends GameManager {
     } // end of method remove objects
 
     public void endGame() {
+        // ask the user for his name
+        String playerName = JOptionPane.showInputDialog(null, ENTER_NAME_MSG);
+        // if user agreed to give name (and did not press cancel), enter name to highscores server.
+        if (playerName != null) {
+            String setUrl = BASE_URL + SET_SCORE_URL_1 + playerName + SET_SCORE_URL_2 + score.value();
+            // send a connection to SET_SCORE URL command, which adds the name and score to the highscores.
+            try {
+                URL myURL = new URL(setUrl);
+                URLConnection myURLConnection = myURL.openConnection();
+                myURLConnection.getContentLength();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        // try to get the high scores from the server
+        try(java.io.InputStream is = new java.net.URL(BASE_URL + GET_SCORES_URL).openStream()) {
+            // contents is in JSON format. Parse it.
+            String contents = new String(is.readAllBytes());
+            String scores = ReadScores.readScores(contents);
+            // show user the highscores.
+            this.windowController.showMessageBox(SCORE_MSG + scores);
+        } catch (Exception e) { e.printStackTrace(); }
+
+        // Play again message
         if (this.windowController.openYesNoDialog(GAME_OVER_MSG))
             windowController.resetGame();
         else
@@ -248,8 +281,6 @@ public class PepseGameManager extends GameManager {
      * Runs the entire simulation.
      * @param args This argument should not be used.
      */
-    public static void main(String[] args){
-    new PepseGameManager().run();
-    } // end of main
+    public static void main(String[] args) { new PepseGameManager().run(); } // end of main
 
 } // end of PepseGameManager
