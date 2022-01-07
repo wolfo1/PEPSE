@@ -145,6 +145,7 @@ public class PepseGameManager extends GameManager {
         // create world
         initialWorld();
         // Leaf and block colliding, projectiles colliding with specific layers
+        gameObjects().layers().shouldLayersCollide(AVATAR_LAYER, TRUNK_LAYER, true);
         gameObjects().layers().shouldLayersCollide(LEAVES_LAYER, GROUND_LAYER, true);
         gameObjects().layers().shouldLayersCollide(PROJECTILES_LAYER, TRUNK_LAYER, true);
         gameObjects().layers().shouldLayersCollide(PROJECTILES_LAYER, LEAVES_LAYER, true);
