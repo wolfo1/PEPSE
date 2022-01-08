@@ -11,9 +11,8 @@ import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.rendering.AnimationRenderable;
 import danogl.gui.rendering.Renderable;
-import danogl.util.Counter;
 import danogl.util.Vector2;
-import pepse.ui.HPBar;
+import pepse.hud.HPBar;
 import pepse.world.NPC.Enemy;
 import pepse.world.weapons.Fireball;
 import pepse.world.weapons.Projectile;
@@ -65,6 +64,7 @@ public class Avatar extends GameObject {
     private SoundReader soundReader;
     private Sound jumpSound = null;
     private Sound flightSound = null;
+    private Terrain terrain;
 
     public Avatar(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable,
                   UserInputListener inputListener, ImageReader imageReader, GameObjectCollection gameObjects,
@@ -119,6 +119,8 @@ public class Avatar extends GameObject {
      */
     public void setProjectileLayer(int projectileLayer) { this.projectileLayer = projectileLayer; }
 
+    public void setTerrain(Terrain terrain) { this.terrain = terrain; }
+
     /**
      * Damages the avatar on certain collisions
      * @param other object hitting
@@ -130,12 +132,6 @@ public class Avatar extends GameObject {
         // if Avatar touches an enemy or gets hit by an enemy projectile, lower HP by 1.
         if (other instanceof Enemy || other instanceof Projectile)
             hpBar.removeHearts(1);
-        if (other.getTag().equals(trunkTag)){
-            if(other.getCenter().x() > this.getCenter().x()+ AVATAR_SIZE /2 )
-                this.transform().setCenterX(other.getCenter().x() - AVATAR_SIZE);
-            else if(other.getCenter().x() < this.getCenter().x() - AVATAR_SIZE /2 )
-                this.transform().setCenterX(other.getCenter().x() + AVATAR_SIZE);
-        }
     }
 
     /**
@@ -157,6 +153,10 @@ public class Avatar extends GameObject {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
+        float groundHeight = terrain.groundHeightAt(this.getCenter().x()) + 10;
+        if (getTopLeftCorner().y() - getDimensions().y() > groundHeight) {
+            this.setTopLeftCorner(new Vector2(getTopLeftCorner().x(), (float) (Math.floor(groundHeight) - getDimensions().y())));
+        }
         if (hpBar.getCurrHP() == 0)
             die();
         if (getVelocity().y() > MAX_SPEED)

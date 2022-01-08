@@ -62,8 +62,7 @@ public class NPCFactory {
         switch (rand.nextInt(NUM_OF_TYPES)) {
             // create skeleton
             case 0:
-                return Skeleton.create(xLocation, avatar, gameObjects, imageReader, soundReader,
-                        windowController.getWindowDimensions(), terrain, enemiesLayer, enemyTag);
+                return Skeleton.create(xLocation, avatar, gameObjects, imageReader, terrain, enemiesLayer, enemyTag);
             default:
                 return null;
         }

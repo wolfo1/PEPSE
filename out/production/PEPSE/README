@@ -2,6 +2,13 @@ omri.wolf1
 galbum
 
 UML DIFFERENCES:
+In the beggining we tried to think exactly what we will need and what we need to implement,
+We used the minimal API which was given in the description of the project and added Sword and CrossBow to the avatar as bonuses.
+In the end we used the minimal API and also decided to implement night and moon togehter with sun and sunHalo. Also, we decided the make the 
+avatar shoot fireballs instead of having a boring sword or crossbow. In the end we decided to practice using some 
+of the design patterns used in this course such as Factory for the enemy etc'.
+We learned that plannig a UML in advance is helpful up to a certain amount,
+We decided to plan ahead before every class we implemented and we found that very useful. 
 
 INFINITE WORLD:
 We implemented two methods, one for extending the world to the left and the other is extending to the right.

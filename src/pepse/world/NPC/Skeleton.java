@@ -5,7 +5,6 @@ import danogl.collisions.GameObjectCollection;
 import danogl.collisions.Layer;
 import danogl.components.ScheduledTask;
 import danogl.gui.ImageReader;
-import danogl.gui.SoundReader;
 import danogl.gui.rendering.AnimationRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
@@ -22,16 +21,11 @@ public class Skeleton extends Enemy {
     private static final Vector2 BONES_DIMENSIONS = new Vector2(40, 40);
     private static final float BONES_DURATION = 30;
     // assets
-    private static final String SKELETON_MODEL = "src/assets/skeletonModel.png";
     private static final String[] SKELETON_WALK = {"src/assets/skeletonWalk1.png", "src/assets/skeletonWalk2.png"};
     private static final double TIME_BETWEEN_WALK = 0.1;
     private static final String SKELETON_DEAD = "src/assets/skeletonDead.png";
-    private static Renderable modelRender;
-    private static AnimationRenderable walkRender;
     private static Renderable deadRender;
     // fields
-    private boolean seenAvatar = false;
-    private final Vector2 windowDimensions;
     private final Terrain terrain;
     private final int layer;
 
@@ -42,15 +36,13 @@ public class Skeleton extends Enemy {
      * @param avatar           the player character, for AI uses
      * @param gameObjects      game Object collection
      * @param terrain          terrain in the game, calculate if needs to jump
-     * @param windowDimensions dimensions of window, so enemy will know if it's on screen or not.
      */
     public Skeleton(Vector2 topLeftCorner, Renderable renderable, Avatar avatar,
-                    GameObjectCollection gameObjects, Terrain terrain, Vector2 windowDimensions, int layer,
+                    GameObjectCollection gameObjects, Terrain terrain, int layer,
                     ImageReader imageReader) {
         super(topLeftCorner, Vector2.ONES.mult(SKELETON_SIZE), renderable, avatar, SKELETON_HP, gameObjects,
                 imageReader);
         this.terrain = terrain;
-        this.windowDimensions = windowDimensions;
         this.layer = layer;
         // add gravity, collide with ground.
         transform().setAccelerationY(GRAVITY);
@@ -63,23 +55,19 @@ public class Skeleton extends Enemy {
      * @param avatar avatar to follow
      * @param gameObjects Collection
      * @param imageReader ImageReader
-     * @param soundReader SoundReader
-     * @param windowDimensions the dimensions of the window
      * @param terrain terrain to calculate terrain height
      * @param layer layer to place skeleton at
      * @param tag enemy tag
      * @return the skeleton
      */
     public static Enemy create(float xLocation, Avatar avatar, GameObjectCollection gameObjects,
-                              ImageReader imageReader, SoundReader soundReader, Vector2 windowDimensions,
-                              Terrain terrain, int layer, String tag) {
+                              ImageReader imageReader, Terrain terrain, int layer, String tag) {
         // read images for the animations
-        modelRender = imageReader.readImage(SKELETON_MODEL, true);
-        walkRender = new AnimationRenderable(SKELETON_WALK, imageReader, true, TIME_BETWEEN_WALK);
+        Renderable walkRender = new AnimationRenderable(SKELETON_WALK, imageReader, true, TIME_BETWEEN_WALK);
         deadRender = imageReader.readImage(SKELETON_DEAD, true);
         // create skeleton
         Skeleton skeleton = new Skeleton(new Vector2(xLocation, avatar.getCenter().y() - 200),
-                modelRender, avatar, gameObjects, terrain, windowDimensions, layer, imageReader);
+                walkRender, avatar, gameObjects, terrain, layer, imageReader);
         gameObjects.addGameObject(skeleton, layer);
         skeleton.setTag(tag);
         // initialize health
@@ -101,44 +89,34 @@ public class Skeleton extends Enemy {
         if (getTopLeftCorner().y() - getDimensions().y() > groundHeight) {
             this.setTopLeftCorner(new Vector2(getTopLeftCorner().x(), (float) (Math.floor(groundHeight) - getDimensions().y())));
         }
-        Vector2 avatarLocation = getAvatarLocation();
-        if (!seenAvatar) {
-            // if the distance from the avatar to skeleton is smaller than the edge of the screen, start walk toward him.
-            if (Math.abs(avatarLocation.x() - this.getCenter().x()) < avatarLocation.x() + windowDimensions.x() / 2) {
-                renderer().setRenderable(walkRender);
-                seenAvatar = true;
-            }
-        }
         // walk toward the avatar
-        else {
-            float xVel = 0;
-            float height = getTopLeftCorner().y() + getDimensions().y();
-            // avatar is to the right
-            if (getAvatarLocation().x() > this.getCenter().x()) {
-                // walk right
-                xVel += VELOCITY_X;
-                renderer().setIsFlippedHorizontally(false);
-                // if the ground is higher ahead to the right, jump
-                float rightXedge = getTopLeftCorner().x() + getDimensions().x() - 10;
-                for (int i = 0; i < 30; i++) {
-                    if (height < Math.floor(terrain.groundHeightAt(rightXedge + i)) && getVelocity().y() == 0)
-                        transform().setVelocityY(VELOCITY_Y);
-                }
+        float xVel = 0;
+        float height = getTopLeftCorner().y() + getDimensions().y();
+        // avatar is to the right
+        if (getAvatarLocation().x() > this.getCenter().x()) {
+            // walk right
+            xVel += VELOCITY_X;
+            renderer().setIsFlippedHorizontally(false);
+            // if the ground is higher ahead to the right, jump
+            float rightXedge = getTopLeftCorner().x() + getDimensions().x() - 10;
+            for (int i = 0; i < 30; i++) {
+                if (height < Math.floor(terrain.groundHeightAt(rightXedge + i)) && getVelocity().y() == 0)
+                    transform().setVelocityY(VELOCITY_Y);
             }
-            // avatar is to the left
-            else {
-                xVel -= VELOCITY_X;
-                renderer().setIsFlippedHorizontally(true);
-                // if the ground is higher to the left, jump
-                float leftXEdge = getTopLeftCorner().x() + 10;
-                for (int i = 0; i < 50; i++) {
-                    if (height < Math.floor(terrain.groundHeightAt(leftXEdge - i)) && getVelocity().y() == 0)
-                        transform().setVelocityY(VELOCITY_Y);
-                }
-            }
-            // move in direction
-            transform().setVelocityX(xVel);
         }
+        // avatar is to the left
+        else {
+            xVel -= VELOCITY_X;
+            renderer().setIsFlippedHorizontally(true);
+            // if the ground is higher to the left, jump
+            float leftXEdge = getTopLeftCorner().x() + 10;
+            for (int i = 0; i < 50; i++) {
+                if (height < Math.floor(terrain.groundHeightAt(leftXEdge - i)) && getVelocity().y() == 0)
+                    transform().setVelocityY(VELOCITY_Y);
+            }
+        }
+        // move in direction
+        transform().setVelocityX(xVel);
     }
 
     /**

@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact name="PEPSE">
+    <output-path>$PROJECT_DIR$/out/artifacts/PEPSE</output-path>
+    <root id="root">
+      <element id="library" level="project" name="DanoGameLab" />
+      <element id="archive" name="PEPSE.jar">
+        <element id="module-output" name="PEPSE" />
+      </element>
+    </root>
+  </artifact>
+</component>

@@ -7,7 +7,7 @@ import danogl.gui.ImageReader;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import pepse.PepseGameManager;
-import pepse.ui.HPBar;
+import pepse.hud.HPBar;
 import pepse.world.Avatar;
 
 /**

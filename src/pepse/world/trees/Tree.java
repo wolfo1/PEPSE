@@ -3,6 +3,7 @@ package pepse.world.trees;
 
 import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
+import danogl.components.GameObjectPhysics;
 import danogl.components.ScheduledTask;
 import danogl.components.Transition;
 import danogl.gui.rendering.RectangleRenderable;
@@ -15,6 +16,26 @@ import java.util.Objects;
 import java.util.Random;
 
 public class Tree {
+    //constants
+    private static final Color LEAF_COLOUR = new Color(50,200,30);
+    private static final Color TRUNK_COLOUR =new Color(100,50,20);
+    private static final int MINIMAL_DISTANCE_BETWEEN_TREES = 300 ;
+    private static final float FADEOUT_TIME = 10;
+    private static final int MAX_HEIGHT = 10;
+    private static final int MIN_HEIGHT = 5;
+    private static final float ODDS = 0.7f;
+    private static final int COLOUR_DELTA = 10;
+    private static final int LEAF_COLOUR_DELTA = 20;
+    private static final int LEAF_ANIMATION_WAIT_TIME = 19;
+    private static final int LEAF_FALL_WAIT_TIME = 60;
+    private static final int LEAF_FALL_DELAY = 7;
+    private static final int TRANSITION_RANDOM_DELAY = 7;
+    private static final int OPAQUENESS = 1;
+    private static final int HALF = 2;
+    private static final int DELAY = 1;
+    private static final int FALL_DELAY = 2;
+    private static final int TRANSITION_DELAY = 3;
+    private static final int LEAF_FALL_RANDOM = 5;
     // fields
     private final GameObjectCollection gameObjects;
     private final Terrain terrain;
@@ -25,28 +46,6 @@ public class Tree {
     private final String trunkTag;
     private final String leafTag;
     private final String groundTag;
-    //colours
-    private final Color LEAF_COLOUR = new Color(50,200,30);
-    private final Color TRUNK_COLOUR =new Color(100,50,20);
-    //constants
-    private final int MINIMAL_DISTANCE_BETWEEN_TREES = 300 ;
-    private final float FADEOUT_TIME = 10;
-    private final int MAX_HEIGHT = 10;
-    private final int MIN_HEIGHT = 5;
-    private static final float ODDS = 0.7f;
-    private final int COLOUR_DELTA = 10;
-    private final int LEAF_COLOUR_DELTA = 20;
-    private final int LEAF_ANIMATION_WAIT_TIME = 19;
-    private final int LEAF_FALL_WAIT_TIME = 60;
-    private final int LEAF_FALL_DELAY = 7;
-    private final int TRANSITION_RANDOM_DELAY = 7;
-    private final int OPAQUENESS = 1;
-    private final int HALF = 2;
-    private final int DELAY = 1;
-    private final int FALL_DELAY = 2;
-    private final int TRANSITION_DELAY = 3;
-    private final int LEAF_FALL_RANDOM = 5;
-
     /**
      * Responsible for the creation and management of trees.
      * @param gameObjects The current game object in use
@@ -118,6 +117,12 @@ public class Tree {
                     new Vector2(location, groundHeight - (i*Block.SIZE)), blockSize,
                     new RectangleRenderable(pepse.util.ColorSupplier.approximateColor( TRUNK_COLOUR, COLOUR_DELTA) ));
             trunk.setTag(this.trunkTag);
+            // so character can stand on the top of the tree
+            if (i == rootHeight - 1) {
+                gameObjects.addGameObject(trunk, trunkLayer + 1);
+                trunk.physics().preventIntersectionsFromDirection(Vector2.UP);
+                trunk.physics().setMass(GameObjectPhysics.IMMOVABLE_MASS - 1);
+            }
             gameObjects.addGameObject(trunk, trunkLayer);
         } // end of for loop
     } // end of createTrunk method

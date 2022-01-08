@@ -17,13 +17,16 @@ public class Rain extends GameObject {
     private static final String RAIN_TAG = "rain";
     private static final float RAIN_OPAQ = 0.2f;
     // assets
-    private static final String[] RAIN_ANIMATION = {"src/assets/rain1.png", "src/assets/rain2.png", "src/assets/rain3.png",
-            "src/assets/rain4.png", "src/assets/rain5.png"};
+    private static final String[] RAIN_ANIMATION = {"src/assets/rain1.png", "src/assets/rain2.png"};
+        //"src/assets/rain3.png",
+        //    "src/assets/rain4.png", "src/assets/rain5.png"};
     private static final String RAIN_SOUND = "src/assets/rain.wav";
     // static fields
     public static boolean isInstantiated = false;
     // fields
     private final Sound rainSound;
+    private final GameObjectCollection gameObjects;
+    private final int layer;
 
     /**
      * default c'tor
@@ -41,6 +44,8 @@ public class Rain extends GameObject {
         super(topLeftCorner, dimensions, renderable);
         // play sound
         rainSound = soundReader.readSound(RAIN_SOUND);
+        this.gameObjects = gameObjects;
+        this.layer = layer;
         rainSound.playLooped();
         // remove Rain after duration, stop sound and set Instantiated to false.
         new ScheduledTask(this, duration, false, () -> {
@@ -61,7 +66,7 @@ public class Rain extends GameObject {
      * @param duration         duration of rain
      * @return GameObject rain
      */
-    public static GameObject create(GameObjectCollection gameObjects, int layer, Vector2 windowDimensions,
+    public static Rain create(GameObjectCollection gameObjects, int layer, Vector2 windowDimensions,
                                     ImageReader imageReader, SoundReader soundReader, int duration) {
         // only 1 instance of rain can be present
         if (isInstantiated)
@@ -69,7 +74,7 @@ public class Rain extends GameObject {
         // read image
         Renderable renderable = new AnimationRenderable(RAIN_ANIMATION, imageReader, true, 0.1);
         // create rain, place it.
-        GameObject rain = new Rain(Vector2.ZERO, windowDimensions, renderable, duration, gameObjects, layer, soundReader);
+        Rain rain = new Rain(Vector2.ZERO, windowDimensions, renderable, duration, gameObjects, layer, soundReader);
         rain.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         rain.renderer().setOpaqueness(RAIN_OPAQ);
         gameObjects.addGameObject(rain, layer);
@@ -77,4 +82,12 @@ public class Rain extends GameObject {
         Rain.isInstantiated = true;
         return rain;
     } // end of method create
+
+    /**
+     * stops raining
+     */
+    public void stopRain() {
+        rainSound.stopAllOccurences();
+        gameObjects.removeGameObject(this, layer);
+    }
 }
