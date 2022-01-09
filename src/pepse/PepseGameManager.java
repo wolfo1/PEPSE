@@ -82,7 +82,6 @@ public class PepseGameManager extends GameManager {
     private Avatar avatar;
     private Camera camera;
     private Terrain terrain;
-    private Rain rain = null;
     private Sound soundtrack;
     // infinite world
     private Random random;
