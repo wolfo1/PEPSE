@@ -43,7 +43,7 @@ public class PepseGameManager extends GameManager {
     private static final int SEED = 123456;
     private static final int MAX_ENEMIES = 2;
     private static final int NIGHT_CYCLE = 30;
-    private static final int CHANCE_FOR_RAIN = 3000; // in once per update frames
+    private static final int CHANCE_FOR_RAIN = 2000; // in once per update frames
     private static final int MIN_RAIN_DURATION = 10; // in seconds
     private static final int MAX_RAIN_DUARTION = 60;
     private static final float MIN_GAP = 50;
@@ -132,7 +132,7 @@ public class PepseGameManager extends GameManager {
         this.avatar.setTerrain(terrain);
         // create HUD elements
         createHUD();
-        // create celestial objects (moon, night, sun, halos)
+        // create celestial objects (moon, night, sun, halos, rain)
         createCelestials();
         // create camera
         this.camera = new Camera(this.avatar, Vector2.ZERO, windowDimensions, windowDimensions);
@@ -179,6 +179,8 @@ public class PepseGameManager extends GameManager {
         GameObject moon = Moon.create(gameObjects(), MOON_LAYER, windowDimensions, NIGHT_CYCLE, imageReader);
         // create moon halo
         SunHalo.create(gameObjects(), MOON_HALO_LAYER, moon, MOON_HALO_COLOR);
+        // create Rain singleton object
+        Rain.create(gameObjects(), RAIN_LAYER, windowDimensions, imageReader, soundReader);
     }
 
     /**
@@ -204,15 +206,14 @@ public class PepseGameManager extends GameManager {
         // checks if to extend to left
         if (leftXCoordinate <= this.leftPointer)
             extendLeft(leftXCoordinate + MIN_GAP, this.leftPointer - EXTEND_WORLD_BY);
-        // check for rain
-        if (!Rain.isInstantiated && random.nextInt(CHANCE_FOR_RAIN) == 0) {
+        // check for rain, and start raining for a random amount of time
+        if (random.nextInt(CHANCE_FOR_RAIN) == 0) {
             int duration = random.nextInt( MAX_RAIN_DUARTION - MIN_RAIN_DURATION) + MIN_RAIN_DURATION;
-            this.rain = Rain.create(gameObjects(), RAIN_LAYER, windowDimensions, imageReader, soundReader, duration);
+            Rain.startRain(duration);
         }
     } //end of update
 
     private void initialWorld() {
-        Rain.isInstantiated = false;
         float rightXCoordinate = camera.screenToWorldCoords(windowDimensions).x();
         float leftXCoordinate = camera.screenToWorldCoords(windowDimensions).x() - windowDimensions.x();
         this.leftPointer = (int) (Math.floor(leftXCoordinate / Block.SIZE) * Block.SIZE) - EXTEND_WORLD_BY;
@@ -313,8 +314,7 @@ public class PepseGameManager extends GameManager {
         }
         if (windowController.openYesNoDialog(GAME_OVER_MSG)) {
             // stop all looping sounds, as the reset game doesn't do it.
-            if (rain != null)
-                rain.stopRain();
+            Rain.stopRain();
             soundtrack.stopAllOccurences();
             windowController.resetGame();
         }
