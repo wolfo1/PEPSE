@@ -3,21 +3,26 @@ package pepse;
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
+import danogl.components.CoordinateSpace;
 import danogl.gui.*;
 import danogl.gui.rendering.Camera;
+import danogl.gui.rendering.Renderable;
 import danogl.util.Counter;
 import danogl.util.Vector2;
+import pepse.hud.HPBar;
 import pepse.hud.OnScreenCounter;
 import pepse.util.ReadScores;
 import pepse.world.Avatar;
 import pepse.world.Block;
 import pepse.world.NPC.NPCFactory;
+import pepse.world.NPC.Skeleton;
 import pepse.world.Sky;
 import pepse.world.Terrain;
 import pepse.world.daynight.Moon;
 import pepse.world.daynight.Night;
 import pepse.world.daynight.Sun;
 import pepse.world.daynight.SunHalo;
+import pepse.world.phenomenon.Explosion;
 import pepse.world.phenomenon.Rain;
 import pepse.world.trees.Tree;
 
@@ -35,6 +40,7 @@ public class PepseGameManager extends GameManager {
     private static final String SET_SCORE_URL_2 = "&score=";
     // assets
     private static final String SOUNDTRACK_PATH = "src/assets/soundtrack.wav";
+    private static final String KEYBOARD_PATH = "src/assets/keyboard.png";
     private static final String GAME_OVER_MSG = "Game Over! Do you want to play again?";
     private static final String ENTER_NAME_MSG = "Enter your name, in english letters only: ";
     private static final String SCORE_MSG = "PEPSE by Omri Wolf & Gabi Album\n         ====HIGHSCORES====\n";
@@ -45,17 +51,19 @@ public class PepseGameManager extends GameManager {
     private static final int NIGHT_CYCLE = 30;
     private static final int CHANCE_FOR_RAIN = 2000; // in once per update frames
     private static final int MIN_RAIN_DURATION = 10; // in seconds
-    private static final int MAX_RAIN_DUARTION = 60;
+    private static final int MAX_RAIN_DURATION = 60;
     private static final float MIN_GAP = 50;
     private static final int EXTEND_WORLD_BY = 10 * Block.SIZE;
     private static final Color SUN_HALO_COLOR = new Color(255, 0, 0, 20);
     private static final Color MOON_HALO_COLOR = new Color(255, 255, 255, 80);
     private static final Vector2 SCORE_HUD_DIM = new Vector2(20, 20);
     private static final int SCORE_HUD_Y_OFFSET = 100;
-    private static final float SCORE_HUD_X_OFFSET = 50;
+    private static final int ENERGY_HUD_Y_OFFSET = 50;
+    private static final int SCORE_HUD_X_OFFSET = 50;
     private static final String SCORE_HUD_MSG = " Enemies Killed";
     private static final String ENERGY_HUD_MSG = " Energy";
-    private static final int ENERGY_HUD_Y_OFFSET = 50;
+    private static final Vector2 KEYBOARD_LOCATION_OFFSET = new Vector2(-400, -110);
+    private static final Vector2 KEYBOARD_DIMS = new Vector2(350, 100);
     //layers
     private static final int SKY_LAYER = Layer.BACKGROUND;
     private static final int SUN_LAYER = Layer.BACKGROUND + 1;
@@ -133,12 +141,13 @@ public class PepseGameManager extends GameManager {
         createHUD();
         // create celestial objects (moon, night, sun, halos, rain)
         createCelestials();
+        // initialize static assets
+        initializeAssets();
         // create camera
         this.camera = new Camera(this.avatar, Vector2.ZERO, windowDimensions, windowDimensions);
         setCamera(camera);
         // create NPCFactory
-        this.npcFactory = new NPCFactory(SEED, avatar, gameObjects(), imageReader, soundReader,
-                AVATAR_LAYER, windowController, terrain, ENEMY_TAG);
+        this.npcFactory = new NPCFactory(SEED, avatar, gameObjects(), imageReader, AVATAR_LAYER, terrain, ENEMY_TAG);
         // create world
         initialWorld();
         // all collision rules. making a new Object on PROJECTILES to be able to include PROJECTILE_LAYER
@@ -152,6 +161,18 @@ public class PepseGameManager extends GameManager {
         gameObjects().layers().shouldLayersCollide(PROJECTILES_LAYER, AVATAR_LAYER, true);
     }// overrides initializeGame
 
+    /**
+     * initialize assets that are used a lot as static assets, so loading them will only happen once.
+     */
+    private void initializeAssets() {
+        Explosion.initAssets(imageReader, soundReader);
+        Skeleton.initAssets(imageReader);
+        HPBar.initAssets(imageReader);
+    }
+
+    /**
+     * create score & energy HUD elements, and keyboard layout element.
+     */
     private void createHUD() {
         // create Score HUD & energy HUD
         OnScreenCounter scoreUI = new OnScreenCounter(PepseGameManager.score,
@@ -163,6 +184,11 @@ public class PepseGameManager extends GameManager {
                 new Vector2(SCORE_HUD_X_OFFSET, this.windowDimensions.y() - ENERGY_HUD_Y_OFFSET),
                 SCORE_HUD_DIM, gameObjects(), ENERGY_HUD_MSG);
         gameObjects().addGameObject(energyUI, Layer.UI);
+        // create keyboard layout HUD
+        Renderable keyboard = imageReader.readImage(KEYBOARD_PATH, true);
+        GameObject keyboardLayout = new GameObject(windowDimensions.add(KEYBOARD_LOCATION_OFFSET), KEYBOARD_DIMS, keyboard);
+        gameObjects().addGameObject(keyboardLayout, Layer.UI);
+        keyboardLayout.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
     }
 
     private void createCelestials() {
@@ -207,7 +233,7 @@ public class PepseGameManager extends GameManager {
             extendLeft(leftXCoordinate + MIN_GAP, this.leftPointer - EXTEND_WORLD_BY);
         // check for rain, and start raining for a random amount of time
         if (random.nextInt(CHANCE_FOR_RAIN) == 0) {
-            int duration = random.nextInt( MAX_RAIN_DUARTION - MIN_RAIN_DURATION) + MIN_RAIN_DURATION;
+            int duration = random.nextInt( MAX_RAIN_DURATION - MIN_RAIN_DURATION) + MIN_RAIN_DURATION;
             Rain.startRain(duration);
         }
     } //end of update

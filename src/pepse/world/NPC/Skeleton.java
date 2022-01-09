@@ -24,7 +24,9 @@ public class Skeleton extends Enemy {
     private static final String[] SKELETON_WALK = {"src/assets/skeletonWalk1.png", "src/assets/skeletonWalk2.png"};
     private static final double TIME_BETWEEN_WALK = 0.1;
     private static final String SKELETON_DEAD = "src/assets/skeletonDead.png";
-    private static Renderable deadRender;
+    // static fields
+    private static Renderable remainsAnimation;
+    private static Renderable walkAnimation;
     // fields
     private final Terrain terrain;
     private final int layer;
@@ -32,16 +34,13 @@ public class Skeleton extends Enemy {
     /**
      * creates an Enemy in the game, of type Skeleton, melee damage enemy.
      * @param topLeftCorner    top left corner of the enemy
-     * @param renderable       renderable of the enemy.
      * @param avatar           the player character, for AI uses
      * @param gameObjects      game Object collection
      * @param terrain          terrain in the game, calculate if needs to jump
      */
-    public Skeleton(Vector2 topLeftCorner, Renderable renderable, Avatar avatar,
-                    GameObjectCollection gameObjects, Terrain terrain, int layer,
-                    ImageReader imageReader) {
-        super(topLeftCorner, Vector2.ONES.mult(SKELETON_SIZE), renderable, avatar, SKELETON_HP, gameObjects,
-                imageReader);
+    public Skeleton(Vector2 topLeftCorner, Avatar avatar,
+                    GameObjectCollection gameObjects, Terrain terrain, int layer) {
+        super(topLeftCorner, Vector2.ONES.mult(SKELETON_SIZE), walkAnimation, avatar, SKELETON_HP, gameObjects);
         this.terrain = terrain;
         this.layer = layer;
         // add gravity, collide with ground.
@@ -62,12 +61,10 @@ public class Skeleton extends Enemy {
      */
     public static Enemy create(float xLocation, Avatar avatar, GameObjectCollection gameObjects,
                               ImageReader imageReader, Terrain terrain, int layer, String tag) {
-        // read images for the animations
-        Renderable walkRender = new AnimationRenderable(SKELETON_WALK, imageReader, true, TIME_BETWEEN_WALK);
-        deadRender = imageReader.readImage(SKELETON_DEAD, true);
+
         // create skeleton
-        Skeleton skeleton = new Skeleton(new Vector2(xLocation, avatar.getCenter().y() - 200),
-                walkRender, avatar, gameObjects, terrain, layer, imageReader);
+        Skeleton skeleton = new Skeleton(new Vector2(xLocation, avatar.getCenter().y() - 200), avatar, gameObjects,
+                terrain, layer);
         gameObjects.addGameObject(skeleton, layer);
         skeleton.setTag(tag);
         // initialize health
@@ -75,7 +72,17 @@ public class Skeleton extends Enemy {
     }
 
     /**
-     * Skeleton AI is once seeing the avatar, always walk towards it.
+     * initialize assets
+     * @param imageReader read images
+     */
+    public static void initAssets(ImageReader imageReader) {
+        // read images for the animations
+        walkAnimation = new AnimationRenderable(SKELETON_WALK, imageReader, true, TIME_BETWEEN_WALK);
+        remainsAnimation = imageReader.readImage(SKELETON_DEAD, true);
+    }
+
+    /**
+     * Skeleton AI: once seeing the avatar, always walk towards it. Jump if ground is higher ahead.
      * @param deltaTime game time
      */
     @Override
@@ -127,7 +134,7 @@ public class Skeleton extends Enemy {
         super.die();
         gameObjects.removeGameObject(this, layer);
         // create skeleton remains
-        GameObject bones = new GameObject(this.getCenter(), BONES_DIMENSIONS, deadRender);
+        GameObject bones = new GameObject(this.getCenter(), BONES_DIMENSIONS, remainsAnimation);
         gameObjects.addGameObject(bones, Layer.STATIC_OBJECTS);
         bones.transform().setAccelerationY(GRAVITY);
         bones.physics().preventIntersectionsFromDirection(Vector2.ZERO);

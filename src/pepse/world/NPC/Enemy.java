@@ -30,11 +30,11 @@ public abstract class Enemy extends GameObject{
      * @param gameObjects game Object collection
      */
     public Enemy(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable, Avatar avatar, int hp,
-                 GameObjectCollection gameObjects, ImageReader imageReader) {
+                 GameObjectCollection gameObjects) {
         super(topLeftCorner, dimensions, renderable);
         this.avatar = avatar;
         this.gameObjects = gameObjects;
-        this.hpBar = new HPBar(this, hp, imageReader, gameObjects);
+        this.hpBar = new HPBar(this, hp, gameObjects);
         gameObjects.addGameObject(hpBar, Layer.UI);
     }
 

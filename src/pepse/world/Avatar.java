@@ -78,7 +78,7 @@ public class Avatar extends GameObject {
         this.walkAnimation = new AnimationRenderable(WALK_PATH, imageReader, true, TIME_BETWEEN_WALK);
         this.flyAnimation = imageReader.readImage(FLY_PATH, true);
         this.selfLayer = layer;
-        this.hpBar = new HPBar(this, AVATAR_HP, imageReader, gameObjects);
+        this.hpBar = new HPBar(this, AVATAR_HP, gameObjects);
         gameObjects.addGameObject(hpBar, Layer.UI);
     }
 

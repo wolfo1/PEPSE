@@ -4,6 +4,7 @@ import danogl.GameObject;
 import danogl.collisions.Collision;
 import danogl.collisions.GameObjectCollection;
 import danogl.gui.ImageReader;
+import danogl.gui.Sound;
 import danogl.gui.SoundReader;
 import danogl.gui.rendering.AnimationRenderable;
 import danogl.gui.rendering.Renderable;
@@ -26,6 +27,9 @@ public class Explosion extends GameObject{
             "src/assets/explosion6.png", "src/assets/explosion7.png"};
     private static final double TIME_BETWEEN_CLIPS = 0.1;
     private static final String SOUND_PATH = "src/assets/explosion.wav";
+    // static fields
+    private static Renderable explosionAnimation;
+    private static Sound explosionSound;
     // fields
     private final GameObjectCollection gameObjects;
     private final int layer;
@@ -34,18 +38,17 @@ public class Explosion extends GameObject{
     /**
      * default c'tor
      * @param dimensions dimensions of the explosion, Vector 2.
-     * @param renderable renderable animation of the explosion.
      * @param gameObjects collection of game objects
      * @param layer the layer the explosion is at
      * @param soundReader read sounds.
      */
-    public Explosion(Vector2 dimensions, Renderable renderable, GameObjectCollection gameObjects, int layer, SoundReader soundReader) {
-        super(Vector2.ZERO, dimensions, renderable);
+    public Explosion(Vector2 dimensions, GameObjectCollection gameObjects, int layer, SoundReader soundReader) {
+        super(Vector2.ZERO, dimensions, explosionAnimation);
         this.gameObjects = gameObjects;
         this.layer = layer;
         this.setTag(EXPLOSION_TAG);
         // play explosion sound once
-        soundReader.readSound(SOUND_PATH).play();
+        explosionSound.play();
     }
 
     /**
@@ -61,13 +64,21 @@ public class Explosion extends GameObject{
     public static GameObject create(GameObjectCollection gameObjects, Vector2 location, int explosionRadius,
                                     ImageReader imageReader, int layer, SoundReader soundReader) {
         // create the renderable animation of the explosion
-        Renderable renderable = new AnimationRenderable(ANIMATION_PATH, imageReader, true, TIME_BETWEEN_CLIPS);
-        Explosion explosion = new Explosion(new Vector2(explosionRadius, explosionRadius), renderable, gameObjects, layer, soundReader);
+        Explosion explosion = new Explosion(new Vector2(explosionRadius, explosionRadius), gameObjects, layer, soundReader);
         gameObjects.addGameObject(explosion, layer);
         explosion.setCenter(location);
         return explosion;
     }
 
+    /**
+     * initialize static assets.
+     * @param imageReader Read images.
+     * @param soundReader Read sounds.
+     */
+    public static void initAssets(ImageReader imageReader, SoundReader soundReader) {
+        explosionAnimation = new AnimationRenderable(ANIMATION_PATH, imageReader, true, TIME_BETWEEN_CLIPS);
+        explosionSound = soundReader.readSound(SOUND_PATH);
+    }
     /**
      * explosion will not destroy the avatar or another explosion.
      * @param other game object collided with explosion

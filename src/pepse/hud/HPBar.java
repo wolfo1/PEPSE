@@ -8,29 +8,40 @@ import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
 public class HPBar extends GameObject{
+    // assets
     private static final String HEART_PATH = "src/assets/heart.png";
+    // constants
     private static final Vector2 HEART_DIMENSIONS = new Vector2(10, 10);
     private static final int HEARTS_HEIGHT_FROM_CHARACTER = 20;
     private static final int HEARTS_SPACE = 3;
     private static final int HEARTS_LAYER = Layer.FOREGROUND - 1;
-
+    // static fields
+    private static Renderable heartRenderable;
+    // fields
     private final GameObject owner;
     private final GameObject[] hearts;
     private final int maxHP;
     private final GameObjectCollection gameObjects;
     private int currHP = 0;
 
-    public HPBar(GameObject owner, int amount, ImageReader imageReader, GameObjectCollection gameObjects) {
+    public HPBar(GameObject owner, int amount, GameObjectCollection gameObjects) {
         super(Vector2.ZERO, Vector2.ZERO, null);
         this.owner = owner;
         this.maxHP = amount;
         this.gameObjects = gameObjects;
         this.hearts = new GameObject[amount];
-        initHP(imageReader);
+        initHP();
     }
 
-    private void initHP (ImageReader imageReader) {
-        Renderable heartImage = imageReader.readImage(HEART_PATH, true);
+    /**
+     * initialize static assets.
+     * @param imageReader Read images
+     */
+    public static void initAssets(ImageReader imageReader) {
+        heartRenderable = imageReader.readImage(HEART_PATH, true);
+    }
+
+    private void initHP () {
         // calculate the top left corner X,Y of the left most heart (so hearts will be even above model).
         float topLeftHeartX = owner.getCenter().x() - ((maxHP * HEART_DIMENSIONS.x() + (maxHP - 1) * HEARTS_SPACE)) / 2;
         float topLeftHeartY = owner.getTopLeftCorner().y() - HEARTS_HEIGHT_FROM_CHARACTER;
@@ -38,7 +49,7 @@ public class HPBar extends GameObject{
         for (int i = 0; i < maxHP; i++) {
             Vector2 topLeft = new Vector2(topLeftHeartX + i * (HEARTS_SPACE + HEART_DIMENSIONS.x()),
                     topLeftHeartY);
-            hearts[i] = new GameObject(topLeft, HEART_DIMENSIONS, heartImage);
+            hearts[i] = new GameObject(topLeft, HEART_DIMENSIONS, heartRenderable);
             gameObjects.addGameObject(hearts[i], HEARTS_LAYER);
         }
         currHP = maxHP;

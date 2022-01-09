@@ -91,7 +91,7 @@ public class Tree {
         } // end of for loop
     } // end of createInRange method
 
-    // creats a tree object
+    // creates a tree object
     private void create(int location, int rootHeight) {
         int groundHeight = heightAt(location); // the ground height at a certain location
         createTrunk(groundHeight, location, rootHeight); // creates the trunk
@@ -104,12 +104,12 @@ public class Tree {
                 Leaf leaf = createLeaf(locationOrigLeaf); // creates leaf with the original location of the leaf
                 leafAnimation(leaf); //uses animation for leaf
                 createLeafFall(leaf, locationOrigLeaf); // makes the leaf to fall
-                gameObjects.addGameObject(leaf, leavesLayer); //adds leaves to the game
+                gameObjects.addGameObject(leaf, leavesLayer); // Add leaves to the game
             } // end of inner for loop
         } // end of outer fol loop
     } // end of method create
 
-    // creats a tree trunk
+    // creates a tree trunk
     private void createTrunk(int groundHeight, int location, int rootHeight) {
         Vector2 blockSize = new Vector2(Block.SIZE, Block.SIZE);
         for (int i = 0; i < rootHeight; i++) {
